@@ -1,0 +1,21 @@
+{
+  "name": "@dexcalibur/dexcalibur-orm",
+  "version": "1.0.0",
+  "description": "Dexcalibur's internal ORM",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm install-ci-test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.jetbrains.space/reversense/dxc/dexcalibur-orm.git"
+  },
+  "keywords": [
+    "orm"
+  ],
+  "author": "Georges-Bastien Michel <georges@reversense.com>",
+  "license": "SEE LICENSE IN LICENSE.TXT",
+  "dependencies": {
+    "chalk": "^5.2.0"
+  }
+}
