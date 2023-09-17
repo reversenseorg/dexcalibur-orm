@@ -4,7 +4,6 @@
     "target": "es2017", // es2017
     "module": "ES2020", // "commonjs",
     "declaration": true,
-    "outDir": ".",
     "removeComments": true,
     "sourceMap": false,
     "strictNullChecks": false,
