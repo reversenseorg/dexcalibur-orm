@@ -1,9 +1,9 @@
-import { CoreStart } from "@kbn/core/server";
-import InMemoryConnector from './adapters/inmemory/InMemoryConnector';
-import { IAppContext } from './IAppContext';
-import {IDatabaseAdapter} from "../orm/DbAbstraction";
-import {IStringIndex} from "../../IStringIndex";
-import { ConnectorFactoryException } from "./ConnectorFactoryException";
+
+import { IAppContext } from './IAppContext.js';
+import {IDatabaseAdapter} from "./DbAbstraction.js";
+import {IStringIndex} from "./core/IStringIndex.js";
+import { ConnectorFactoryException } from "./error/ConnectorFactoryException.js";
+import {ConnectorFactory} from "./ConnectorFactory.js";
 
 
 let gInstance:ConnectorFactory|null = null;
@@ -15,25 +15,23 @@ interface WebConnectorMap {
 }
 
 export interface WebConnectorOptions {
-  coreStart?: CoreStart, // kibana
   cluster?: string[],
   factory?: ConnectorFactory,
 
   [ppt:string] :any
 }
 
-export interface WebConnectorOptionsMap extends IStringIndex{
+export interface WebConnectorOptionsMap extends IStringIndex<any>{
   cache?: WebConnectorOptions,
 }
 
 export interface WebConnectorFactoryOptions {
-  coreStart?: CoreStart,
   connectors?: WebConnectorOptionsMap
 }
 
 
 /**
- * Represent the connector factory.
+ * Represent the connector factory in browser context
  *
  * @class
  */
@@ -50,7 +48,6 @@ export class WebConnectorFactory
      */
     constructor() {
         this.connectors = {
-          inmemory: InMemoryConnector
         };
     }
 
@@ -102,8 +99,12 @@ export class WebConnectorFactory
         }
 
         this.options.connectors[pType].factory = this;
-        // inject core setup
-        this.options.connectors[pType].coreStart = this.options.coreStart;
+
+        Object.keys(this.options).map(x => {
+            Object.defineProperty(this.options.connectors[pType], x, {
+                value: this.options[x]
+            });
+        })
 
 
         //console.log(this.connectors, this.connectors[pType]);

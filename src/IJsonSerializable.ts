@@ -1,10 +1,10 @@
-import {IStringIndex} from "./IStringIndex";
+import {IStringIndex} from "./core/IStringIndex.js";
 
 export interface SerializeOptions {
-  override?: IStringIndex,
-  exclude?: IStringIndex,
+  override?: IStringIndex<any>,
+  exclude?: IStringIndex<any>,
 }
 
-export interface IJsonSerializable extends IStringIndex{
+export interface IJsonSerializable extends IStringIndex<any>{
   toJsonObject( pOption?:SerializeOptions):any;
 }

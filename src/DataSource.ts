@@ -1,5 +1,11 @@
-import {NodeType} from "./NodeType";
+import {NodeType} from "./NodeType.js";
 
+/**
+ * Represent a location where node are stored, and from where
+ * it can be retrieved
+ *
+ * @class
+ */
 export class DataSource  {
 
 
@@ -33,9 +39,11 @@ export class DataSource  {
   /**
    * To find instance for 1 node by using its UID
    *
-   * @param pNodeType
-   * @param pProject
-   * @param pUID
+   * @param {NodeType} pNodeType Type of node to resolve
+   * @param {any} pContext
+   * @param {any} pUID The node UID
+   * @return {any} An instance of type <NodeType>
+   * @method
    */
   find( pNodeType:NodeType, pContext:any, pUID:any):any{
     if(pUID == null) return null;
@@ -69,6 +77,11 @@ export class DataSource  {
     }
   }
 
+  /**
+   *
+   * @param pNodeType
+   * @param pExtra
+   */
   register( pNodeType:NodeType, pExtra:any):void{
     this._handlers[pNodeType.getName()] = pExtra;
   }

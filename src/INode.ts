@@ -1,23 +1,36 @@
-import {NodeInternalType} from "./NodeInternalType";
+import {ENodeInternalTypes, NodeInternalType} from "./NodeInternalType";
 import {IJsonSerializable, SerializeOptions} from "./IJsonSerializable";
-import {IStringIndex} from "../../IStringIndex";
+import {IStringIndex} from "./core/IStringIndex";
+
+
+export type TagUUID = number;
 
 export interface INode extends IJsonSerializable{
 
   __:NodeInternalType;
+
   getUID():string|null;
-  tags:number[];
+
+  tags:TagUUID[];
 }
 
+/**
+ * The most basic implementation for a Node
+ *
+ * @class
+ */
 export class Node implements INode{
-  __:NodeInternalType = NodeInternalType.NONE;
+
+  __:NodeInternalType = ENodeInternalTypes.NONE;
+
   uid:string|null = null;
-  tags:number[] = [];
+
+  tags:TagUUID[] = [];
 
   constructor(pConfig:any = null) {
     if(pConfig != null){
       for(const  i in pConfig){
-        (this as IStringIndex)[i]=pConfig[i];
+        (this as IStringIndex<any>)[i]=pConfig[i];
       }
     }
   }
@@ -25,7 +38,7 @@ export class Node implements INode{
   protected _init(pConfig:any):void {
     if(pConfig != null){
       for(const  i in pConfig){
-        (this as IStringIndex)[i]=pConfig[i];
+        (this as IStringIndex<any>)[i]=pConfig[i];
       }
     }
   }
@@ -59,7 +72,7 @@ export class Node implements INode{
         switch(typeof this[i]){
           case "object":
           default:
-            (o as IStringIndex)[i] = this[i];
+            (o as IStringIndex<any>)[i] = this[i];
             break;
         }
       }

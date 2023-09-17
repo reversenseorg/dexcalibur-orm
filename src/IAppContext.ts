@@ -1,5 +1,3 @@
-import {SearchAPI} from "../../search/SearchAPI";
-import {UserContext} from "../../../server/core/UserContext";
 
 export enum AppContextType {
   WEB_CLIENT,
@@ -8,10 +6,4 @@ export enum AppContextType {
 
 export interface IAppContext {
   _type:AppContextType;
-
-  getDomain():any;
-
-  getSearchAPI():SearchAPI;
-
-  getUserContext():UserContext|null;
 }

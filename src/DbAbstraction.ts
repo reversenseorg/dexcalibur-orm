@@ -1,5 +1,4 @@
-import {NodeType} from "./NodeType";
-import {CacheStore} from "../db/adapters/cache/CacheStore";
+import {NodeType} from "./NodeType.js";
 
 export enum DbDataType {
     // strings
@@ -75,9 +74,19 @@ export interface IDbSet {
 
     search?( pRequest:any, pOptions?:any):Promise<any>;
 
-    hasCache():boolean;
+    /**
+     * To check if a proxy is configured to intercept some operation
+     *
+     * Such proxy can be used as a cache mechanisms
+     *
+     * Replace hasCache()
+     */
+    hasProxy():boolean;
 
-    getCache():CacheStore;
+    /**
+     * Replace getCache()
+     */
+    getProxy():any;
 }
 
 /*
@@ -91,6 +100,16 @@ export interface IDbSetAsync extends IDbSet {
   size():Promise<number>;
 }*/
 
+
+/**
+ * Represent a list of object indexed by numeric key
+ *
+ * Such interface is better to represent data stored into
+ * a table from a RDBMS Table with a senseless numeric primary key
+ *
+ * @implements {IDbSet}
+ * @interface
+ */
 export interface IDbIndex extends IDbSet {
 
     name:string;
@@ -120,7 +139,15 @@ export interface DbSizesMap {
     [name:string] :number ;
 }
 
-
+/**
+ * Represent a set of object indexed by name/UUID
+ *
+ * Such interface is best suited to represent data stored into
+ * a collection or index, and referenced by an unique name / string.
+ *
+ * @implements {IDbSet}
+ * @interface
+ */
 export interface IDbCollection extends IDbSet
 {
     name:string;

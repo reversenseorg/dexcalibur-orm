@@ -1,24 +1,16 @@
-import { CoreStart } from "@kbn/core/server";
-import CacheConnector from "./adapters/cache/CacheConnector";
-import ElasticConnector from "./adapters/elastic/ElasticConnector";
-import InMemoryConnector from './adapters/inmemory/InMemoryConnector';
-import { IAppContext } from './IAppContext';
-import {IDatabaseAdapter} from "../orm/DbAbstraction";
-import {IStringIndex} from "../../IStringIndex";
-import { ConnectorFactoryException } from "./ConnectorFactoryException";
+
+import { IAppContext } from './IAppContext.js';
+import {IDatabaseAdapter} from "./DbAbstraction.js";
+import {IStringIndex} from "./core/IStringIndex.js";
+import { ConnectorFactoryException } from "./error/ConnectorFactoryException.js";
 
 
 let gInstance:ConnectorFactory|null = null;
 
 
-export class ConnectorDb
-{
-
-}
-
 
 interface ConnectorMap {
-  [name:string] :any;
+  [name:string] :IDatabaseAdapter;
 }
 
 export interface ConnectorBasicAuth {
@@ -29,19 +21,17 @@ export interface ConnectorBasicAuth {
 }
 
 export interface ConnectorOptions {
-  coreStart?: CoreStart, // kibana
   cluster?: string[],
   factory?: ConnectorFactory,
   auth?: ConnectorBasicAuth,
   [ppt:string] :any
 }
 
-export interface ConnectorOptionsMap extends IStringIndex{
+export interface ConnectorOptionsMap extends IStringIndex<any>{
   cache?: ConnectorOptions,
 }
 
 export interface ConnectorFactoryOptions {
-  coreStart?: CoreStart,
   connectors?: ConnectorOptionsMap
 }
 
@@ -64,9 +54,7 @@ export class ConnectorFactory
      */
     constructor() {
         this.connectors = {
-          cache: CacheConnector,
-          elastic: ElasticConnector,
-          inmemory: InMemoryConnector
+
         };
     }
 
@@ -118,12 +106,16 @@ export class ConnectorFactory
         }
 
         this.options.connectors[pType].factory = this;
-        // inject core setup
-        this.options.connectors[pType].coreStart = this.options.coreStart;
+
+        Object.keys(this.options).map(x => {
+            Object.defineProperty(this.options.connectors[pType], x, {
+                value: this.options[x]
+            });
+        })
 
 
-        //console.log(this.connectors, this.connectors[pType]);
-        return new this.connectors[pType]( pContext, {
+        // @ts-ignore
+        return new (this.connectors[pType])( pContext, {
           ...pOptions,
           ...this.options.connectors[pType]
         });
@@ -138,6 +130,7 @@ export class ConnectorFactory
     toJsonObject():any{
         let o:any=[];
         for(let i in this.connectors){
+            // @ts-ignore
             o.push(this.connectors[i].default.getProperties());
         }
         return o;

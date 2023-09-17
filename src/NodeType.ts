@@ -1,16 +1,16 @@
 /**
- * Project : @reversense/dexcalibur
+ * Project : @reversense/dexcalibur-orm-connector
  * @copyright : Reversense SAS
  * @author Georges-B. Michel <georges@reversense.com>
  */
-import {NodeProperty} from "./NodeProperty";
-import {NodeInternalType} from "./NodeInternalType";
-import {DbKeyType} from "./DbAbstraction";
-import * as Log from "./utils/Logger";
-import {IncomingValue, UnsafeValue} from "../security/SanitizedValue";
-import {SqliteException} from "./error/SqliteException";
-import {DataSource} from "./DataSource";
-import {OrmException} from "./error/OrmException";
+import {NodeProperty} from "./NodeProperty.js";
+import {NodeInternalType} from "./NodeInternalType.js";
+import {DbKeyType} from "./DbAbstraction.js";
+import {newLogger, Logger} from "./utils/Logger.js";
+import {IncomingValue, UnsafeValue} from "./security/SanitizedValue.js";
+import {ConnectorException} from "./error/ConnectorException.js";
+import {DataSource} from "./DataSource.js";
+import {OrmException} from "./error/OrmException.js";
 
 
 export interface NodePropertyMap {
@@ -30,7 +30,7 @@ export interface NodeListenersMap {
 }
 
 
-let Logger:Log.Logger = Log.newLogger() as Log.Logger;
+let Logger:Logger = newLogger() as Logger;
 
 /**
  * Represents the type of the node
@@ -236,7 +236,7 @@ export class NodeType {
     if(!pk.isCompositeKey()){
       return this.getPrimaryKey().clone(fk).key(pKeyType, pOffset)
     }else {
-      throw new SqliteException("Injection of composite foreign keys are not supported : node=" + this.getName());
+      throw new ConnectorException("Injection of composite foreign keys are not supported : node=" + this.getName());
     }
   }
 
@@ -370,7 +370,7 @@ export class NodeType {
   /**
    * To get table columns template
    *
-   * @return {DbColumnTemplate[]} Columns template
+   * @return {NodeProperty[]} Columns template
    * @method
    */
   getProperties():NodeProperty[] {
@@ -448,9 +448,9 @@ export class NodeType {
 
 
   getDataSource():DataSource {
-      if(this._ds==null){
-        throw new Error("[ORM+CORE] A data source is used but not defined");
-      }
+    if(this._ds==null){
+      throw new Error("[ORM+CORE] A data source is used but not defined");
+    }
 
     return (this._ds as DataSource);
   }

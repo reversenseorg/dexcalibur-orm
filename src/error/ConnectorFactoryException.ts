@@ -1,6 +1,6 @@
 
 
-import {MonitoredError} from "../../errors/MonitoredError";
+import {MonitoredError} from "./MonitoredError.js";
 
 export class ConnectorFactoryException extends MonitoredError {
 

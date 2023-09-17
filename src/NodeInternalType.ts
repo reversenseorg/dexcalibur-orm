@@ -1,24 +1,8 @@
-export enum NodeInternalType {
-  NONE,
-  SNIPPET,
-  INVESTIGATION,
-  SYSMON_CONFIG,
-  DOCUMENT,
-  META_ENUM,
-  EVT_SEARCH_REQUEST,
-  REQUEST_TPL,
-  ARTEFACT,
-  TAG,
-  TAG_CATEGORY,
-  EVENT_TYPE,
-  EVENT_TYPE_TPL,
-  EVENT_PPT_TYPE,
-  GENERIC_PPT_TYPE,
-  DATA_SRC,
-  DATA_SRC_FMT,
-  RAW_EVENT,
-  SRV_CONFIG,
-  COMPUTER,
-  INTERVAL,
-  COMPUTER_LIST
+export type NodeInternalType = number;
+
+export interface NodeInternalTypeMapping {
+  [name:string]:NodeInternalType
+}
+export const ENodeInternalTypes:NodeInternalTypeMapping = {
+  NONE: 0
 }

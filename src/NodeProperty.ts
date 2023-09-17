@@ -1,8 +1,9 @@
-import {DbDataType, DbKeyType, DbSerialize} from "./DbAbstraction";
-import {NodeType} from "./NodeType";
-import {ValidationRule} from "../security/Validator";
-import {IncomingValue, SanitizedValue, UnsafeValue} from "../security/SanitizedValue";
-import {IStringIndex} from "./IStringIndex";
+import {DbDataType, DbKeyType, DbSerialize} from "./DbAbstraction.js";
+import {NodeType} from "./NodeType.js";
+import {ValidationRule} from "./security/Validator.js";
+import {IncomingValue, SanitizedValue, UnsafeValue} from "./security/SanitizedValue.js";
+import {IStringIndex} from "./core/IStringIndex.js";
+import {OrmException} from "./error/OrmException";
 
 
 export interface NodePropertyState {
@@ -56,6 +57,11 @@ export class NodeProperty {
    * @constructor
    */
   constructor(pName:string) {
+
+    if(pName===null || pName===undefined || pName.match(/^[\s\t]*$/i)){
+      throw OrmException.NODE_PROPERTY_HAS_EMPTY_NAME();
+    }
+
     this._name = pName;
   }
 
@@ -70,7 +76,7 @@ export class NodeProperty {
   static from(pConfig:any):NodeProperty {
     const tpl = new NodeProperty(pConfig._name);
     for(const i in pConfig){
-      (tpl as IStringIndex)[i] = pConfig[i]
+      (tpl as IStringIndex<any>)[i] = pConfig[i]
     }
     return tpl;
   }
@@ -339,7 +345,7 @@ export class NodeProperty {
   clone(pOverride:any = {}):NodeProperty{
     let o = NodeProperty.from(this);
     for(const i in pOverride){
-      (o as IStringIndex)[i] = pOverride[i];
+      (o as IStringIndex<any>)[i] = pOverride[i];
     }
     return o;
   }

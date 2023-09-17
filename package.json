@@ -4,7 +4,9 @@
   "description": "Dexcalibur's internal ORM",
   "main": "index.js",
   "scripts": {
-    "test": "npm install-ci-test"
+    "build": "npx tsc",
+    "test": "DEXCALIBUR_TEST=1 mocha -r ts-node/register ./test/**/*.ts",
+    "clean": "rm src/**/*.js src/**/*.d.ts"
   },
   "repository": {
     "type": "git",
@@ -17,5 +19,15 @@
   "license": "SEE LICENSE IN LICENSE.TXT",
   "dependencies": {
     "chalk": "^5.2.0"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/chai": "^4.3.6",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.6.2",
+    "chai": "^4.3.8",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   }
 }

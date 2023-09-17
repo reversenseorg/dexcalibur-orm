@@ -5,19 +5,19 @@ This file should not include any file from project (recursive dependency)
 */
 
 
-import chalk from "chalk";
+import {chalk} from "./Chalk.js";
 import * as Process from 'process';
 import * as _fs_ from "fs";
 import * as _os_ from "os";
 
 
-
+//const chalk = _chalk_.default;
 
 let PRINT:((str:any|any[])=>void) = (()=>{});
 
 
 const LOG_DEF_FILE = false;
-const LOG_FILE = (Process.env.DXC_LOG_PATH ? Process.env.DXC_LOG_PATH : LOG_DEF_FILE);
+const LOG_FILE = (process.env.DXC_LOG_PATH ? process.env.DXC_LOG_PATH : LOG_DEF_FILE);
 
 
 if(LOG_FILE)
@@ -269,7 +269,7 @@ export function newLogger(config:any =null, override:boolean =false):TestLogger|
       };
     }
 
-    if((config!==null && config.testMode) || Process.env.DXC_ORM_TEST)
+    if((config!==null && config.testMode) || Process.env.FORENSOC_TEST)
       loggerInstance = new TestLogger(config.debugMode);
     else
       loggerInstance = new ProdLogger(config.debugMode);
