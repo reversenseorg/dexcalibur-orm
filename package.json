@@ -2,13 +2,8 @@
   "name": "@dexcalibur/dexcalibur-orm",
   "version": "1.0.0",
   "description": "Dexcalibur's internal ORM",
-  "exports": {
-    "./*.js": "./src/*.js",
-    "./core/*.js": "./src/core/*.js",
-    "./error/*.js": "./src/error/*.js",
-    "./security/*.js": "./src/security/*.js",
-    "./utils/*.js": "./src/utils/*.js"
-  },
+  "main": "dist/entry.js",
+  "types": "dist/dexcalibur-orm.d.ts",
   "scripts": {
     "build": "npx tsc",
     "test": "DEXCALIBUR_TEST=1 mocha -r ts-node/register ./test/**/*.ts",
