@@ -1,4 +1,4 @@
-import {MonitoredError} from "./MonitoredError";
+import {MonitoredError} from "./MonitoredError.js";
 
 export class ConnectorException extends MonitoredError {
 
