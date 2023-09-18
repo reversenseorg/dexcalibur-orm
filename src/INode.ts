@@ -1,6 +1,6 @@
-import {ENodeInternalTypes, NodeInternalType} from "./NodeInternalType";
-import {IJsonSerializable, SerializeOptions} from "./IJsonSerializable";
-import {IStringIndex} from "./core/IStringIndex";
+import {ENodeInternalTypes, NodeInternalType} from "./NodeInternalType.js";
+import {IJsonSerializable, SerializeOptions} from "./IJsonSerializable.js";
+import {IStringIndex} from "./core/IStringIndex.js";
 
 
 export type TagUUID = number;
