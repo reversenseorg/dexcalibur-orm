@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "Dexcalibur's internal ORM",
   "exports": {
-    "./**/*.js": "./src/**/*.js",
-    "./*.js": "./src/*.js"
+    "./*.js": "./src/*.js",
+    "./core/*.js": "./src/core/*.js",
+    "./error/*.js": "./src/error/*.js",
+    "./security/*.js": "./src/security/*.js",
+    "./utils/*.js": "./src/utils/*.js"
   },
   "scripts": {
     "build": "npx tsc",
