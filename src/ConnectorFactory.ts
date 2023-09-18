@@ -28,7 +28,7 @@ export interface ConnectorOptions {
 }
 
 export interface ConnectorOptionsMap extends IStringIndex<any>{
-  cache?: ConnectorOptions,
+  cache?: ConnectorOptions
 }
 
 export interface ConnectorFactoryOptions {
@@ -39,13 +39,17 @@ export interface ConnectorFactoryOptions {
 /**
  * Represent the connector factory.
  *
+ * A connector is an instance of an adapter with specific options and
+ * it is attached to a context
+ *
  * @class
  */
 export class ConnectorFactory
 {
+    adapters:any = {};
     connectors:ConnectorMap = {};
 
-    options: ConnectorFactoryOptions;
+    options: ConnectorFactoryOptions = {};
 
     /**
      * To create a new factory for each connector contaiend into connectors/*
@@ -53,11 +57,19 @@ export class ConnectorFactory
      * @constructor
      */
     constructor() {
-        this.connectors = {
-
-        };
     }
 
+    addAdapter(pAdapterConstructor:any, pName:string = null):void {
+        this.adapters[pName] = pAdapterConstructor;
+    }
+
+    getAdapter(pName:string):any {
+        const adapter = this.adapters[pName];
+        if(adapter==null){
+            throw ConnectorFactoryException.UNKNOWN_ADAPTER(pName);
+        }
+        return this.adapters[pName];
+    }
     /**
      * To get the instance of ConnectorFactory
      *
@@ -78,7 +90,7 @@ export class ConnectorFactory
     }
 
     getConnector(pName:string):IDatabaseAdapter {
-      if(this.connectors.hasOwnProperty(pName)===false){
+      if(this.connectors[pName]==null){
         throw ConnectorFactoryException.UNKNOW_CONNECTOR(pName);
       }
 
@@ -93,21 +105,21 @@ export class ConnectorFactory
      * @method
      */
     newConnector( pType:string, pContext:IAppContext, pOptions:any = {}):IDatabaseAdapter{
-        if(this.connectors.hasOwnProperty(pType)===false){
-          throw ConnectorFactoryException.UNKNOW_CONNECTOR(pType);
+        if(this.adapters[pType]==null){
+          throw ConnectorFactoryException.UNKNOWN_ADAPTER(pType);
         }
 
-        if(this.options == null || this.options.connectors == null){
-          throw ConnectorFactoryException.UNDEFINED_GLOBAL_OPTS();
+        if(this.options.connectors == null){
+            this.options.connectors = {};
         }
 
         if(this.options.connectors[pType] == null){
-          throw ConnectorFactoryException.UNDEFINED_CONNECTOR_OPTS(pType);
+          this.options.connectors[pType] = {};
         }
 
         this.options.connectors[pType].factory = this;
 
-        Object.keys(this.options).map(x => {
+        Object.keys(pOptions).map(x => {
             Object.defineProperty(this.options.connectors[pType], x, {
                 value: this.options[x]
             });
@@ -115,7 +127,7 @@ export class ConnectorFactory
 
 
         // @ts-ignore
-        return new (this.connectors[pType])( pContext, {
+        return new (this.adapters[pType])( pContext, {
           ...pOptions,
           ...this.options.connectors[pType]
         });
