@@ -18,6 +18,11 @@ import { ConnectorException } from "./src/error/ConnectorException.js";
 import {PassthroughValue, SanitizedValue, UnsafeValue } from "./src/security/SanitizedValue.js";
 import {ValidationCapable, ValidationError, ValidationRule, ValidationRulesMap, ValidationType, Validator } from "./src/security/Validator.js";
 import {MessageType, newLogger, ProdLogger, TestLogger } from "./src/utils/Logger.js";
+import { IStringIndex } from "./src/core/IStringIndex.js";
+import { TagCategory } from "./src/search/TagCategory.js";
+import { Tag } from "./src/search/Tag.js";
+import { SearchOptions, SearchRequestCondition, ValidateOptions } from "./src/search/SearchRequestCondition.js";
+import { SearchToken } from "./src/search/SearchToken.js";
 
 
 
@@ -79,5 +84,12 @@ export {
     newLogger,
     ProdLogger,
     TestLogger,
-    MessageType
+    MessageType,
+    IStringIndex,
+    Tag,
+    TagCategory,
+    SearchOptions,
+    ValidateOptions,
+    SearchRequestCondition,
+    SearchToken
 };

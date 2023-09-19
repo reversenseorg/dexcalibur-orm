@@ -1,12 +1,10 @@
+import {IStringIndex} from "../../../src/core/IStringIndex.js";
 
-interface IStringIndex {
-  [key: string]: any
-}
 
 /**
  * to represent a serialized object
  */
-export default class SerializedObject implements IStringIndex
+export default class SerializedObject implements IStringIndex<any>
 {
   static refs:any = {};
 
@@ -16,7 +14,7 @@ export default class SerializedObject implements IStringIndex
   constructor(pConfig:any=null){
     if(pConfig!==null){
         for(let i in pConfig){
-          (this as IStringIndex)[i] = pConfig[i];
+          (this as IStringIndex<any>)[i] = pConfig[i];
         }
     }
   }
