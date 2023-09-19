@@ -188,7 +188,7 @@ export interface IDbCollection extends IDbSet
  */
 export interface IDatabaseAdapter
 {
-    exists():boolean;
+    exists(pDbName?:string):boolean;
     create():boolean;
     connect(pOptions:any):any;
     close():boolean;
