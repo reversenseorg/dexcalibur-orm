@@ -7,7 +7,7 @@ import { ConnectorFactoryException } from "./src/error/ConnectorFactoryException
 import {AppContextType, IAppContext } from "./src/IAppContext.js";
 import { IJsonSerializable, SerializeOptions } from "./src/IJsonSerializable.js";
 import { INode, INodeMap, Node, TagUUID } from "./src/INode.js";
-import { NodeInternalType, NodeInternalTypeMapping } from "./src/NodeInternalType.js";
+import {ENodeInternalTypes, NodeInternalType, NodeInternalTypeMapping, NodeInternalTypeName } from "./src/NodeInternalType.js";
 import { NodeProperty, NodePropertyState } from "./src/NodeProperty.js";
 import {NodeInternalTypeMap, NodePropertyMap, NodeType, NodeTypeMap, NodeListenersMap } from "./src/NodeType.js";
 import { WebConnectorFactory, WebConnectorFactoryOptions, WebConnectorOptions, WebConnectorOptionsMap } from "./src/WebConnectorFactory.js";
@@ -91,5 +91,7 @@ export {
     SearchOptions,
     ValidateOptions,
     SearchRequestCondition,
-    SearchToken
+    SearchToken,
+    NodeInternalTypeName,
+    ENodeInternalTypes
 };
