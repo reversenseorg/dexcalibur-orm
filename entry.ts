@@ -25,6 +25,24 @@ import { SearchOptions, SearchRequestCondition, ValidateOptions } from "./src/se
 import { SearchToken } from "./src/search/SearchToken.js";
 
 
+Tag.TYPE.updateProperties([
+    (new NodeProperty('_uid')).type(DbDataType.STRING).key(DbKeyType.PRIMARY),
+    (new NodeProperty('_')).type(DbDataType.NUMERIC),
+    (new NodeProperty('label')).type(DbDataType.STRING),
+    (new NodeProperty('name')).type(DbDataType.STRING),
+    (new NodeProperty('descr')).type(DbDataType.STRING),
+    (new NodeProperty('category')).single(TagCategory.TYPE),
+    (new NodeProperty("tags")).type(DbDataType.STRING).serialize(DbSerialize.JSON).def("[]"),
+    (new NodeProperty("style")).type(DbDataType.STRING).serialize(DbSerialize.JSON).def("{}"),
+]).builder(Tag);
+
+
+TagCategory.TYPE.updateProperties([
+    (new NodeProperty('name')).type(DbDataType.STRING).key(DbKeyType.PRIMARY).notnull(),
+    (new NodeProperty('descr')).type(DbDataType.STRING),
+    (new NodeProperty('_tags')).volatile().multiple(Tag.TYPE),
+    (new NodeProperty("tags")).type(DbDataType.STRING).serialize(DbSerialize.JSON).def("[]"),
+]).builder(TagCategory);
 
 export {
     IAppContext,
