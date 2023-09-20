@@ -3,6 +3,8 @@ import {INode} from "../INode.js";
 import {TagCategory} from "./TagCategory.js";
 import {NodeType} from "../NodeType.js";
 import {ENodeInternalTypes, NodeInternalType} from "../NodeInternalType.js";
+import {NodeProperty} from "../NodeProperty.js";
+import {DbDataType, DbKeyType, DbSerialize} from "../DbAbstraction.js";
 
 export interface TagMap {
     [hashCode:number] :Tag
@@ -96,7 +98,7 @@ export class Tag implements INode
      *
      */
     toJsonObject():any{
-        const o:any = new Object();
+        const o:any = {};
         o.__ = this.__;
         o._ = this._;
         o._uid = this._uid;
@@ -112,4 +114,13 @@ export class Tag implements INode
 
 
 }
-Tag.TYPE.builder(Tag);
+Tag.TYPE.updateProperties([
+    (new NodeProperty('_uid')).type(DbDataType.STRING).key(DbKeyType.PRIMARY),
+    (new NodeProperty('_')).type(DbDataType.NUMERIC),
+    (new NodeProperty('label')).type(DbDataType.STRING),
+    (new NodeProperty('name')).type(DbDataType.STRING),
+    (new NodeProperty('descr')).type(DbDataType.STRING),
+    (new NodeProperty('category')).single(TagCategory.TYPE),
+    (new NodeProperty("tags")).type(DbDataType.STRING).serialize(DbSerialize.JSON).def("[]"),
+    (new NodeProperty("style")).type(DbDataType.STRING).serialize(DbSerialize.JSON).def("{}"),
+]).builder(Tag);

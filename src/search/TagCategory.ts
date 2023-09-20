@@ -3,6 +3,8 @@ import {INode, TagUUID} from "../INode.js";
 import {NodeType} from "../NodeType.js";
 import { Tag } from "./Tag.js";
 import {CoreDebug} from "../core/CoreDebug.js";
+import { NodeProperty } from "../NodeProperty.js";
+import {DbDataType, DbKeyType, DbSerialize} from "../DbAbstraction.js";
 
 /**
  * Tag categories are conceptuals, and are only used to help to manage tags
@@ -69,7 +71,7 @@ export class TagCategory implements INode
     }
 
     toJsonObject():any{
-        const o:any = new Object();
+        const o:any = {};
         o.name = this.name;
         o.descr = this.descr;
         o.tags = this.tags;
@@ -88,4 +90,9 @@ export class TagCategory implements INode
         return this.name;
     }
 }
-TagCategory.TYPE.builder(TagCategory);
+TagCategory.TYPE.updateProperties([
+    (new NodeProperty('name')).type(DbDataType.STRING).key(DbKeyType.PRIMARY).notnull(),
+    (new NodeProperty('descr')).type(DbDataType.STRING),
+    (new NodeProperty('_tags')).volatile().multiple(Tag.TYPE),
+    (new NodeProperty("tags")).type(DbDataType.STRING).serialize(DbSerialize.JSON).def("[]"),
+]).builder(TagCategory);
