@@ -6,7 +6,7 @@ import { ConnectorFactoryException } from "./error/ConnectorFactoryException.js"
 import {ConnectorFactory} from "./ConnectorFactory.js";
 
 
-let gInstance:ConnectorFactory|null = null;
+let gInstance:WebConnectorFactory|null = null;
 
 
 
@@ -26,7 +26,7 @@ export interface WebConnectorOptionsMap extends IStringIndex<any>{
 }
 
 export interface WebConnectorFactoryOptions {
-  connectors?: WebConnectorOptionsMap
+  adapters?: WebConnectorOptionsMap
 }
 
 
@@ -37,9 +37,11 @@ export interface WebConnectorFactoryOptions {
  */
 export class WebConnectorFactory
 {
+    adapters:any = {};
+
     connectors:WebConnectorMap = {};
 
-    options: WebConnectorFactoryOptions;
+    options: WebConnectorFactoryOptions = {};
 
     /**
      * To create a new factory for each connector contaiend into connectors/*
@@ -49,6 +51,18 @@ export class WebConnectorFactory
     constructor() {
         this.connectors = {
         };
+    }
+
+    addAdapter(pAdapterConstructor:any, pName:string = null):void {
+        this.adapters[pName] = pAdapterConstructor;
+    }
+
+    getAdapter(pName:string):any {
+        const adapter = this.adapters[pName];
+        if(adapter==null){
+            throw ConnectorFactoryException.UNKNOWN_ADAPTER(pName);
+        }
+        return this.adapters[pName];
     }
 
     /**
@@ -90,18 +104,18 @@ export class WebConnectorFactory
           throw ConnectorFactoryException.UNKNOW_CONNECTOR(pType);
         }
 
-        if(this.options == null || this.options.connectors == null){
+        if(this.options == null || this.options.adapters == null){
           throw ConnectorFactoryException.UNDEFINED_GLOBAL_OPTS();
         }
 
-        if(this.options.connectors[pType] == null){
+        if(this.options.adapters[pType] == null){
           throw ConnectorFactoryException.UNDEFINED_CONNECTOR_OPTS(pType);
         }
 
-        this.options.connectors[pType].factory = this;
+        this.options.adapters[pType].factory = this;
 
         Object.keys(this.options).map(x => {
-            Object.defineProperty(this.options.connectors[pType], x, {
+            Object.defineProperty(this.options.adapters[pType], x, {
                 value: this.options[x]
             });
         })
@@ -110,7 +124,7 @@ export class WebConnectorFactory
         //console.log(this.connectors, this.connectors[pType]);
         return new this.connectors[pType]( pContext, {
           ...pOptions,
-          ...this.options.connectors[pType]
+          ...this.options.adapters[pType]
         });
     }
 
