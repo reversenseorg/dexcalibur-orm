@@ -3,7 +3,7 @@ import {NodeType} from "./NodeType.js";
 import {ValidationRule} from "./security/Validator.js";
 import {IncomingValue, SanitizedValue, UnsafeValue} from "./security/SanitizedValue.js";
 import {IStringIndex} from "./core/IStringIndex.js";
-import {OrmException} from "./error/OrmException";
+import {OrmException} from "./error/OrmException.js";
 
 
 export interface NodePropertyState {
