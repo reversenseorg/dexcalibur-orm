@@ -8,7 +8,7 @@ import SerializedObject from "./SerializedObject.js";
 import {InMemoryException} from "./error/InMemoryException.js";
 import { IDbCollection } from "../../../src/DbAbstraction.js";
 import { NodeType } from "../../../src/NodeType.js";
-import {INode} from "../../../src/INode";
+import {INode} from "../../../src/INode.js";
 
 
 export default class InMemoryDbCollection implements IDbCollection

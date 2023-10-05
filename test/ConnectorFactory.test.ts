@@ -1,10 +1,10 @@
 import {expect} from "chai";
 import {ConnectorFactory} from "../src/ConnectorFactory.js";
-import {IDatabaseAdapter, IDbCollection} from "../src/DbAbstraction";
-import {NodeType} from "../src/NodeType";
-import InMemoryConnector from "./connectors/inmemory/InMemoryConnector";
-import {InMemoryDb} from "./connectors/inmemory/InMemoryDb";
-import {AppContextType, IAppContext} from "../src/IAppContext";
+import {IDatabaseAdapter, IDbCollection} from "../src/DbAbstraction.js";
+import {NodeType} from "../src/NodeType.js";
+import InMemoryConnector from "./connectors/inmemory/InMemoryConnector.js";
+import {InMemoryDb} from "./connectors/inmemory/InMemoryDb.js";
+import {AppContextType, IAppContext} from "../src/IAppContext.js";
 
 describe('ConnectorFactory', function() {
 

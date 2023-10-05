@@ -1,4 +1,4 @@
-import { NodeInternalTypeName } from "../NodeInternalType";
+import { NodeInternalTypeName } from "../NodeInternalType.js";
 
 
 /**
