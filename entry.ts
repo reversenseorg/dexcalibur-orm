@@ -1,4 +1,4 @@
-import {ConnectorBasicAuth, ConnectorFactory, ConnectorOptions } from "./src/ConnectorFactory.js";
+ import {ConnectorBasicAuth, ConnectorFactory, ConnectorOptions } from "./src/ConnectorFactory.js";
 import { DataSourceHelper } from "./src/DataSourceHelper.js";
 import { DataSource } from "./src/DataSource.js";
 import { DbDataType, DbKeyType, IDatabase, IDatabaseAdapter, DbSetMap, DbSizesMap, IDbCollection, IDbIndex, IDbSet, DbSetType, DbSerialize  } from "./src/DbAbstraction.js";
@@ -21,8 +21,6 @@ import {MessageType, newLogger, ProdLogger, TestLogger } from "./src/utils/Logge
 import { IStringIndex } from "./src/core/IStringIndex.js";
 import { TagCategory } from "./src/search/TagCategory.js";
 import { Tag } from "./src/search/Tag.js";
-import { SearchOptions, SearchRequestCondition, ValidateOptions } from "./src/search/SearchRequestCondition.js";
-import { SearchToken } from "./src/search/SearchToken.js";
 
 
 Tag.TYPE.updateProperties([
@@ -106,10 +104,6 @@ export {
     IStringIndex,
     Tag,
     TagCategory,
-    SearchOptions,
-    ValidateOptions,
-    SearchRequestCondition,
-    SearchToken,
     NodeInternalTypeName,
     ENodeInternalTypes
 };
