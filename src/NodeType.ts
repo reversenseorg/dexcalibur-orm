@@ -11,8 +11,7 @@ import {IncomingValue, UnsafeValue} from "./security/SanitizedValue.js";
 import {ConnectorException} from "./error/ConnectorException.js";
 import {DataSource} from "./DataSource.js";
 import {OrmException} from "./error/OrmException.js";
-import {DataSourceHelper} from "./DataSourceHelper";
-import {IStringIndex} from "./core/IStringIndex";
+import {DataSourceHelper} from "./DataSourceHelper.js";
 
 
 export interface NodePropertyMap {
