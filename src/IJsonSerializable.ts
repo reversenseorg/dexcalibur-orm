@@ -10,7 +10,12 @@ export interface SerializeOptions {
    */
   include?: string[],
   offset?:number,
-  size?:number
+  size?:number,
+  /**
+   * Extra optional field to support extra features
+   * @type {any}
+   */
+  extra?:any
 }
 
 export interface IJsonSerializable extends IStringIndex<any>{
