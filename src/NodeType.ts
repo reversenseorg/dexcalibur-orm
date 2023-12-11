@@ -11,6 +11,8 @@ import {IncomingValue, UnsafeValue} from "./security/SanitizedValue.js";
 import {ConnectorException} from "./error/ConnectorException.js";
 import {DataSource} from "./DataSource.js";
 import {OrmException} from "./error/OrmException.js";
+import {DataSourceHelper} from "./DataSourceHelper";
+import {IStringIndex} from "./core/IStringIndex";
 
 
 export interface NodePropertyMap {
@@ -95,7 +97,7 @@ export class NodeType {
   /**
    * Data source
    */
-  _ds:DataSource|null = null; //DataSourceHelper.FILE;
+  _ds:string|null = null; //DataSourceHelper.FILE;
 
   /**
    * Data Source alias
@@ -451,7 +453,7 @@ export class NodeType {
     return this;
   }
 
-  dataSource(pSrc:DataSource, pExtra:any = null):any {
+  dataSource(pSrc:string, pExtra:any = null):any {
     this._ds = pSrc;
 //        this._ds.register(this, pExtra);
     if(pExtra != null){
@@ -467,8 +469,11 @@ export class NodeType {
     if(this._ds==null){
       throw new Error("[ORM+CORE] A data source is used but not defined");
     }
+    if(((DataSourceHelper as any)[this._ds])==null){
+      throw new Error("[ORM+CORE] Data source ["+this._ds+"] is missing.");
+    }
 
-    return (this._ds as DataSource);
+    return (DataSourceHelper as any)[this._ds] as DataSource;
   }
 
 
