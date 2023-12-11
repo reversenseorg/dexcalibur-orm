@@ -463,13 +463,16 @@ export class NodeType {
 
   }
 
+  hasDataSource():boolean {
+    return (this._ds!=null);
+  }
 
   getDataSource():DataSource {
     if(this._ds==null){
-      throw new Error("[ORM+CORE] A data source is used but not defined");
+      throw new Error("[ORM+CORE] A data source is used but not defined [node="+this.getName()+"]");
     }
     if(((DataSourceHelper as any)[this._ds])==null){
-      throw new Error("[ORM+CORE] Data source ["+this._ds+"] is missing.");
+      throw new Error("[ORM+CORE] Data source ["+this._ds+"] is missing. [node="+this.getName()+"]");
     }
 
     return (DataSourceHelper as any)[this._ds] as DataSource;
