@@ -1,6 +1,6 @@
 {
   "name": "@dexcalibur/dexcalibur-orm",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Dexcalibur's internal ORM",
   "main": "./dist/entry.js",
   "exports": "./dist/entry.js",

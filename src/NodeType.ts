@@ -188,7 +188,7 @@ export class NodeType {
     return NodeType.INTERN[pInternalID];
   }
 
-  onChange( pFn:(()=>void) ){
+  onChange( pFn:((vPpts?:NodeProperty[])=>void) ){
     if(!this._ev.hasOwnProperty('change')) this._ev.change = [];
     (this._ev.change as any[]).push(pFn);
   }
