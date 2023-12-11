@@ -188,6 +188,22 @@ export class NodeType {
     return NodeType.INTERN[pInternalID];
   }
 
+  /**
+   * To retrieve the Node type from its name
+   *
+   * @param {string} pName Node name, as declared in the constructor
+   * @return {NodeType} Instance of the NodeType associated to this name
+   * @method
+   * @static
+   */
+  static getTypeByName(pName:string):NodeType {
+    const type:NodeType = NodeType.ALL[pName];
+    if(type==null){
+      throw Error("NodeType not recognized");
+    }
+    return type;
+  }
+
   onChange( pFn:((vPpts?:NodeProperty[])=>void) ){
     if(!this._ev.hasOwnProperty('change')) this._ev.change = [];
     (this._ev.change as any[]).push(pFn);
