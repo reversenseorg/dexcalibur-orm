@@ -8,7 +8,9 @@ export interface SerializeOptions {
    * Others fields are ignored.
    * @type {string[]}
    */
-  include?: string[]
+  include?: string[],
+  offset?:number,
+  size?:number
 }
 
 export interface IJsonSerializable extends IStringIndex<any>{
