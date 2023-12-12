@@ -59,7 +59,7 @@ export class TagCategory implements INode
      * @param pTag
      */
     addTag(pTag:Tag){
-        if(this._tags.findIndex((a,b)=>{ return (a.getUUID()===pTag.getUUID()? b: -1)}) ==-1){
+        if(this._tags.findIndex((a,b)=>{ return (a.getUID()===pTag.getUID()? b: -1)}) ==-1){
             pTag.setFQN(this.getUID()+'.'+pTag.name);
             pTag.category = this;
             this._tags.push(pTag);
