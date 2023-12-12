@@ -58,10 +58,21 @@ export class TagCategory implements INode
      * Add a tag to the category
      * @param pTag
      */
-    addTag(pTag:Tag){
-        if(this._tags.findIndex((a,b)=>{ return (a.name===pTag.name? b: -1)}) ==-1){
+    addTag(pTag:Tag, pForce = false){
+
+        const idx = this._tags.findIndex((a,b)=>{
+            console.log(pTag.name, a.name);
+            return (a.name===pTag.name? b: -1);
+        })
+
+        if(pForce){
             pTag.setFQN(this.getUID()+'.'+pTag.name);
             pTag.category = this;
+            this._tags.push(pTag);
+        } else if(idx ==-1){
+            pTag.setFQN(this.getUID()+'.'+pTag.name);
+            pTag.category = this;
+
             this._tags.push(pTag);
         }
     }
