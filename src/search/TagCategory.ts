@@ -5,6 +5,7 @@ import { Tag } from "./Tag.js";
 import {CoreDebug} from "../core/CoreDebug.js";
 import { NodeProperty } from "../NodeProperty.js";
 import {DbDataType, DbKeyType, DbSerialize} from "../DbAbstraction.js";
+import {IStringIndex} from "../core/IStringIndex";
 
 /**
  * Tag categories are conceptuals, and are only used to help to manage tags
@@ -30,6 +31,7 @@ export class TagCategory implements INode
     tags:TagUUID[] = [];
 
     private _tags:Tag[] = [];
+    private _tagsMap:IStringIndex<Tag> = {};
 
     /**
      *
@@ -54,27 +56,18 @@ export class TagCategory implements INode
     }
     */
 
+
     /**
      * Add a tag to the category
      * @param pTag
      */
     addTag(pTag:Tag, pForce = false){
-
-        const idx = this._tags.findIndex((a,b)=>{
-            console.log(pTag.name, a.name);
-            return (a.name===pTag.name? b: -1);
-        })
-
-        if(pForce){
-            pTag.setFQN(this.getUID()+'.'+pTag.name);
-            pTag.category = this;
-            this._tags.push(pTag);
-        } else if(idx ==-1){
-            pTag.setFQN(this.getUID()+'.'+pTag.name);
-            pTag.category = this;
-
-            this._tags.push(pTag);
+        if(this._tagsMap[pTag.name]==null){
+            this._tags.push( this._tagsMap[pTag.name] = pTag);
         }
+
+        pTag.setFQN(this.getUID()+'.'+pTag.name);
+        pTag.category = this;
     }
 
     getTags():Tag[]{
