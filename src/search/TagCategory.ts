@@ -89,6 +89,21 @@ export class TagCategory implements INode
 
     /**
      *
+     * @param pObj
+     */
+    static fromJsonObject(pObj:any):TagCategory {
+        const cat = new TagCategory(pObj);
+        if(pObj._tags!=null){
+            pObj._tags.map( vTag => {
+                const tag = new Tag(vTag);
+                cat.addTag(tag);
+            })
+        }
+        return cat;
+    }
+
+    /**
+     *
      */
     getUID(): string {
         return this.name;
