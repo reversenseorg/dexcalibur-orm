@@ -39,7 +39,7 @@ TagCategory.TYPE.updateProperties([
     (new NodeProperty('name')).type(DbDataType.STRING).key(DbKeyType.PRIMARY).notnull(),
     (new NodeProperty('descr')).type(DbDataType.STRING),
     (new NodeProperty('_tags')).volatile().multiple(Tag.TYPE),
-    (new NodeProperty("tags")).type(DbDataType.STRING).def([]),
+    (new NodeProperty("tags")).type(DbDataType.STRING).def("[]"),
 ]).builder(TagCategory);
 
 export {
