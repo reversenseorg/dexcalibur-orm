@@ -48,4 +48,10 @@ export class DataSourceHelper {
   static addSource( pName:string, pDataSource:DataSource):void {
     DataSourceHelper[pName] = pDataSource;
   }
+
+
+  static addAsyncSource( pName:string, pDataSource:DataSource):void {
+    DataSourceHelper[pName] = pDataSource;
+    DataSourceHelper[pName].async = true;
+  }
 }

@@ -8,7 +8,7 @@ import {NodeType} from "./NodeType.js";
  */
 export class DataSource  {
 
-
+  asyncSrc = false;
   name:string;
   private _fn:any = null;
   private _handlers:any = {};
@@ -16,6 +16,10 @@ export class DataSource  {
   constructor( pName:string, pFind:any) {
     this.name = pName;
     this._fn = pFind;
+  }
+
+  isAsync():boolean {
+    return this.asyncSrc;
   }
 
   getQueryFn():any {
@@ -68,6 +72,48 @@ export class DataSource  {
     }else{
       const entries:any = [];
       const find1 = this._fn.single.call( null, pContext, pNodeType, pUID);
+
+      pUID.map( (vUID:any)=>{
+        entries.push( find1.call(null, vUID) );
+      });
+
+      return entries;
+    }
+  }
+
+
+  /**
+   * To find instance for 1 node by using its UID
+   *
+   * @param {NodeType} pNodeType Type of node to resolve
+   * @param {any} pContext
+   * @param {any} pUID The node UID
+   * @return {any} An instance of type <NodeType>
+   * @method
+   */
+   async asyncFind( pNodeType:NodeType, pContext:any, pUID:any):Promise<any>{
+    if(pUID == null) return null;
+
+    return await this._fn.single.call( null, pContext, pNodeType, pUID);
+  }
+
+
+  /**
+   * To find all instances with specified UIDs
+   *
+   * @param pNodeType
+   * @param pProject
+   * @param pUID
+   */
+  async asyncFindMult( pNodeType:NodeType,  pContext:any, pUID:any[]):Promise<any>{
+
+    if(pUID == null || pUID.length == 0) return [];
+
+    if(this._fn.multi != null){
+      return await (this._fn.multi.call( null, pContext, pNodeType)).call( null, pUID);
+    }else{
+      const entries:any = [];
+      const find1 = await this._fn.single.call( null, pContext, pNodeType, pUID);
 
       pUID.map( (vUID:any)=>{
         entries.push( find1.call(null, vUID) );
