@@ -52,6 +52,6 @@ export class DataSourceHelper {
 
   static addAsyncSource( pName:string, pDataSource:DataSource):void {
     DataSourceHelper[pName] = pDataSource;
-    DataSourceHelper[pName].async = true;
+    DataSourceHelper[pName].asyncSrc = true;
   }
 }
