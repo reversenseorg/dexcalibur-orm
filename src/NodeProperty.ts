@@ -4,6 +4,7 @@ import {ValidationRule} from "./security/Validator.js";
 import {IncomingValue, SanitizedValue, UnsafeValue} from "./security/SanitizedValue.js";
 import {IStringIndex} from "./core/IStringIndex.js";
 import {OrmException} from "./error/OrmException.js";
+import {Node} from "./INode";
 
 
 export interface NodePropertyState {
@@ -27,6 +28,7 @@ export class NodeProperty {
   _v:boolean = false;
   _u:boolean = false;
   _m:boolean = false;
+  _e:boolean = false;
 
   /**
    * Foreign Key name into target node
@@ -397,5 +399,27 @@ export class NodeProperty {
     }else{
       return new UnsafeValue(this.getName(), pValue);
     }
+  }
+
+  /**
+   * To store instance of single/multiple nodes inside the same
+   * object instead of inside another collection.
+   *
+   * @return {NodeProperty}
+   * @method
+   */
+  embed():NodeProperty {
+    this._e = true;
+    return this;
+  }
+
+  /**
+   * To check is the property must be embedded
+   *
+   * @return {boolean}
+   * @method
+   */
+  isEmbedded():boolean {
+    return this._e;
   }
 }
