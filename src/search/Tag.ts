@@ -29,7 +29,7 @@ export class Tag implements INode
     _uid:string;
     descr:string;
     label:string;
-    style:any = {};
+    styles:any = {};
 
 
     /**
@@ -105,7 +105,7 @@ export class Tag implements INode
         o.name = this.name;
         o.label = this.label;
         o.descr = this.descr;
-        o.style = this.style;
+        o.styles = this.styles;
         o.category = (this.category!=null ? this.category.getUID() : null);
 
         CoreDebug.checkJsonSerialize(o,"Tag");

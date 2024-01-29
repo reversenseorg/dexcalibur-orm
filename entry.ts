@@ -31,7 +31,7 @@ Tag.TYPE.updateProperties([
     (new NodeProperty('descr')).type(DbDataType.STRING),
     (new NodeProperty('category')).single(TagCategory.TYPE),
     (new NodeProperty("tags")).type(DbDataType.STRING).def([]),
-    (new NodeProperty("style")).type(DbDataType.STRING).def({}),
+    (new NodeProperty("styles")).type(DbDataType.STRING).def({}),
 ]).builder(Tag);
 
 
