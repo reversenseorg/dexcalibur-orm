@@ -7,6 +7,18 @@ import { NodeProperty } from "../NodeProperty.js";
 import {DbDataType, DbKeyType, DbSerialize} from "../DbAbstraction.js";
 import {IStringIndex} from "../core/IStringIndex";
 
+
+/**
+ * Option to initiallize a tag category
+ */
+export interface TagCategoryOptions {
+    name?:string;
+    descr?:string;
+    tags?:TagUUID[];
+    _tags?:Tag[];
+    _tagsMap?:IStringIndex<Tag>;
+}
+
 /**
  * Tag categories are conceptuals, and are only used to help to manage tags
  *
@@ -27,10 +39,27 @@ export class TagCategory implements INode
      * Category name
      */
     name:string = null;
+
+    /**
+     * Category description
+     */
     descr:string = null;
+
+    /**
+     * Tags of the category when the category is treated as any taggable node
+     */
     tags:TagUUID[] = [];
 
+    /**
+     * Children tags
+     * @private
+     */
     private _tags:Tag[] = [];
+
+    /**
+     * Children tags indexed by name
+     * @private
+     */
     private _tagsMap:IStringIndex<Tag> = {};
 
     /**
@@ -38,30 +67,20 @@ export class TagCategory implements INode
      * @param pConfig
      * @constructor
      */
-    constructor(pConfig:any) {
+    constructor(pConfig:TagCategoryOptions) {
         for(const i in pConfig){
             this[i] = pConfig[i];
         }
     }
 
-    /*
-    constructor(name:string, taglist:string[]){
-        this.name = name;
-        this.taglist = taglist;
-    }
-
-    addTag(tag:string){
-        if(this.taglist.indexOf(tag)==-1)
-            this.taglist.push(tag);
-    }
-    */
-
 
     /**
      * Add a tag to the category
-     * @param pTag
+     *
+     * @param {Tag} pTag The tag instance to add
+     * @method
      */
-    addTag(pTag:Tag, pForce = false){
+    addTag(pTag:Tag):void{
         if(this._tagsMap[pTag.name]==null){
             this._tags.push( this._tagsMap[pTag.name] = pTag);
         }
@@ -70,10 +89,22 @@ export class TagCategory implements INode
         pTag.category = this;
     }
 
+    /**
+     * To get all tags
+     *
+     * @return {Tag[]} A list a tag include into the category
+     * @method
+     */
     getTags():Tag[]{
         return this._tags;
     }
 
+    /**
+     * To prepare a raw JS Cyclic-reference-free object ready to be serialized
+     *
+     * @return {any}
+     * @method
+     */
     toJsonObject():any{
         const o:any = {};
         o.name = this.name;
@@ -88,10 +119,13 @@ export class TagCategory implements INode
     }
 
     /**
-     *
-     * @param pObj
+     * To create a new TagCategory instance from a raw JS object
+     * @param {any} pObj Raw JS Object
+     * @return {TagCategory} The fresh instance of tag category
+     * @method
+     * @static
      */
-    static fromJsonObject(pObj:any):TagCategory {
+    static fromJsonObject(pObj:TagCategoryOptions):TagCategory {
         const cat = new TagCategory(pObj);
         if(pObj._tags!=null){
             pObj._tags.map( vTag => {
@@ -103,7 +137,8 @@ export class TagCategory implements INode
     }
 
     /**
-     *
+     * To get the UID
+     * @method
      */
     getUID(): string {
         return this.name;

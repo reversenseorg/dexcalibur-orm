@@ -1,15 +1,27 @@
 import {CoreDebug} from "../core/CoreDebug.js";
-import {INode} from "../INode.js";
+import {INode, TagUUID} from "../INode.js";
 import {TagCategory} from "./TagCategory.js";
 import {NodeType} from "../NodeType.js";
 import {ENodeInternalTypes, NodeInternalType} from "../NodeInternalType.js";
-import {NodeProperty} from "../NodeProperty.js";
-import {DbDataType, DbKeyType, DbSerialize} from "../DbAbstraction.js";
+import {Nullable} from "../core/IStringIndex";
 
 export interface TagMap {
     [hashCode:number] :Tag
 }
 
+/**
+ * Option to initialize a tag
+ */
+export interface TagOptions {
+    _?:number;
+    _uid?:string;
+    descr?:string;
+    label?:string;
+    styles?:any;
+    tags?:number[];
+    name?:string;
+    category?:TagCategory;
+}
 /**
  * Tags are a way to attach properties to nodes at runtime
  *
@@ -24,11 +36,64 @@ export class Tag implements INode
     );
     __:NodeInternalType = ENodeInternalTypes.TAG;
 
-    _:number;
+    /**
+     * The TagUUID - a unique number for entire project
+     * which uniquely identify the tag.
+     * @type {number}
+     */
+    _:TagUUID;
 
+    /**
+     * Canonical UID of the tag
+     * A string to uniquely identify and understand the tag
+     * inside a project
+     * @type {string}
+     */
     _uid:string;
+
+    /**
+     * An internal name for this tag.
+     *
+     * It must be unique inside the parent tag category, and
+     * it must allow to identify the tag inside its category.
+     * The `name` is used to build the canonical UID `_uid` with
+     * the parent UID.
+     *
+     * @type {string}
+     */
+    name:string;
+
+    /**
+     * The parent tag category
+     */
+    category:TagCategory = null;
+
+    /**
+     * Description which appear with tagged data when the user
+     * ask more information.
+     *
+     * The description must :
+     * - explain WHY the data has this tag
+     * - explain WHAT is expected with such data
+     *
+     * @type {string}
+     */
     descr:string;
+
+    /**
+     * A short label to print in place of canonical UID
+     *
+     * @type {string}
+     */
     label:string;
+
+    /**
+     * CSS Styles to apply to UI Badge of the tag
+     *
+     * Keep in mind the badge must be short and clear.
+     *
+     * @type {any}
+     */
     styles:any = {};
 
 
@@ -37,13 +102,16 @@ export class Tag implements INode
      *
      * @private
      */
-    tags:number[] = [];
-
-    name:string;
-    category:TagCategory = null;
+    tags:TagUUID[] = [];
 
 
-    constructor(pConfig:any=null){
+    /**
+     * To create a new Tag instance
+     *
+     * @param {Nullable<TagOptions>} pConfig Optional. Default NULL.
+     * @constructor
+     */
+    constructor(pConfig:Nullable<TagOptions>=null){
         if(pConfig!=null)
             for(const i in pConfig)
                 this[i] = pConfig[i];
