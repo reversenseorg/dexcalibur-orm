@@ -19,8 +19,8 @@ import {PassthroughValue, SanitizedValue, UnsafeValue } from "./src/security/San
 import {ValidationCapable, ValidationError, ValidationRule, ValidationRulesMap, ValidationType, Validator } from "./src/security/Validator.js";
 import {MessageType, newLogger, ProdLogger, TestLogger } from "./src/utils/Logger.js";
 import { IStringIndex } from "./src/core/IStringIndex.js";
-import { TagCategory } from "./src/search/TagCategory.js";
-import { Tag } from "./src/search/Tag.js";
+import { TagCategory, TagCategoryOptions } from "./src/search/TagCategory.js";
+import { Tag, TagOptions } from "./src/search/Tag.js";
 
 
 Tag.TYPE.updateProperties([
@@ -104,6 +104,8 @@ export {
     IStringIndex,
     Tag,
     TagCategory,
+    TagOptions,
+    TagCategoryOptions,
     NodeInternalTypeName,
     ENodeInternalTypes
 };
