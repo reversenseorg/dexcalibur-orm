@@ -3,9 +3,7 @@ import {INode, TagUUID} from "../INode.js";
 import {NodeType} from "../NodeType.js";
 import { Tag } from "./Tag.js";
 import {CoreDebug} from "../core/CoreDebug.js";
-import { NodeProperty } from "../NodeProperty.js";
-import {DbDataType, DbKeyType, DbSerialize} from "../DbAbstraction.js";
-import {IStringIndex} from "../core/IStringIndex";
+import {IStringIndex} from "../core/IStringIndex.js";
 
 
 /**

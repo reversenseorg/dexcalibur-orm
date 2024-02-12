@@ -3,7 +3,7 @@ import {INode, TagUUID} from "../INode.js";
 import {TagCategory} from "./TagCategory.js";
 import {NodeType} from "../NodeType.js";
 import {ENodeInternalTypes, NodeInternalType} from "../NodeInternalType.js";
-import {Nullable} from "../core/IStringIndex";
+import {Nullable} from "../core/IStringIndex.js";
 
 export interface TagMap {
     [hashCode:number] :Tag
