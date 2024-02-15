@@ -154,6 +154,28 @@ export class Tag implements INode
     }
 
     /**
+     * To update the current Tag on active project and prevent
+     * regression
+     *
+     * @param {TagOptions} pOptions
+     * @method
+     */
+    updateWithOptions(pOptions:TagOptions):Tag {
+        for(const i in pOptions){
+            switch (i){
+                case 'label':
+                case 'styles':
+                case 'descr':
+                case 'name':
+                    this[i] = pOptions[i];
+                    break;
+            }
+        }
+
+        return this;
+    }
+
+    /**
      * To check if the specified INode object has current tag
      *
      * @param {INode} vNode
