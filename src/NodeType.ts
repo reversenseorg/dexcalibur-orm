@@ -12,7 +12,7 @@ import {ConnectorException} from "./error/ConnectorException.js";
 import {DataSource} from "./DataSource.js";
 import {OrmException} from "./error/OrmException.js";
 import {DataSourceHelper} from "./DataSourceHelper.js";
-import {INode} from "./INode";
+import {INode} from "./INode.js";
 
 
 export interface NodePropertyMap {
