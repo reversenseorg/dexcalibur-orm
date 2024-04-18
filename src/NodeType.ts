@@ -12,6 +12,7 @@ import {ConnectorException} from "./error/ConnectorException.js";
 import {DataSource} from "./DataSource.js";
 import {OrmException} from "./error/OrmException.js";
 import {DataSourceHelper} from "./DataSourceHelper.js";
+import {INode} from "./INode";
 
 
 export interface NodePropertyMap {
@@ -503,5 +504,18 @@ export class NodeType {
     }
   }
 
-
+  /**
+   * To set the UID of the specified node instance using
+   * primary key defintion from this NodeType instance
+   *
+   * @param {INode} pNode Node instance
+   * @param {any} pPkValue Value of the primary key
+   * @method
+   */
+  setPrimaryKeyValueOf(pNode:INode, pPkValue:any){
+    if(this._pk==null){
+      throw OrmException.UNDEFINED_PRIMARY_KEY(this._type);
+    }
+    pNode[this._pk.getName()] = pPkValue;
+  }
 }
