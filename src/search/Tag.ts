@@ -20,6 +20,7 @@ export interface TagOptions {
     styles?:any;
     tags?:number[];
     name?:string;
+    extra?:Record<string, any>;
     category?:TagCategory;
 }
 /**
@@ -104,6 +105,13 @@ export class Tag implements INode
      */
     tags:TagUUID[] = [];
 
+    /**
+     * A place where extra data can be stored
+     * as pairs of key/value
+     *
+     * @type {Record<string, any>}
+     */
+    extra:Record<string, any> = {}
 
     /**
      * To create a new Tag instance
@@ -167,6 +175,7 @@ export class Tag implements INode
                 case 'styles':
                 case 'descr':
                 case 'name':
+                case 'extra':
                     this[i] = pOptions[i];
                     break;
             }
@@ -196,6 +205,7 @@ export class Tag implements INode
         o.label = this.label;
         o.descr = this.descr;
         o.styles = this.styles;
+        o.extra = this.extra;
         o.category = (this.category!=null ? this.category.getUID() : null);
 
         CoreDebug.checkJsonSerialize(o,"Tag");
