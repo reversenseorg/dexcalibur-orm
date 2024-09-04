@@ -11,7 +11,10 @@ export enum OpCode {
   READ,
   UPDATE,
   DELETE,
-  EXISTS
+  EXISTS,
+  CREATE_MANY,
+  UPDATE_MANY,
+  DELETE_MANY,
 }
 
 /**
@@ -21,7 +24,7 @@ export enum OpCode {
  */
 export enum ObjType {
   DOCUMENT,
-  INDEX
+  INDEX,
 }
 
 /**
@@ -30,7 +33,7 @@ export enum ObjType {
  * @interface
  */
 export interface DbEvent {
-  uid:string, // must include user session / be secure
+  uid:string[]|string, // must include user session / be secure
   db?: string;
   operation: OpCode,
   objtype: ObjType,
