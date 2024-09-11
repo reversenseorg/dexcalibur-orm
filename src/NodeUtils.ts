@@ -1,4 +1,6 @@
 import {INode} from "./INode";
+import {Nullable} from "./core/IStringIndex";
+import {SerializeOptions} from "./IJsonSerializable";
 
 /**
  * An utility class that offers some static method to perform
@@ -40,7 +42,7 @@ export class NodeUtils {
      * @method
      * @static
      */
-    static serialize(pObject:INode|INode[]):any {
+    static serialize(pObject:INode|INode[], pOptions:Nullable<SerializeOptions> = null):any {
 
         if(Array.isArray(pObject)){
             const out:any[] = [];
@@ -53,7 +55,7 @@ export class NodeUtils {
             });
             return out;
         }else if(NodeUtils.isNode(pObject)){
-            return pObject.toJsonObject();
+            return pObject.toJsonObject(pOptions);
         }else {
             return pObject;
         }
