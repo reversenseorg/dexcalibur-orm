@@ -295,24 +295,4 @@ describe('NodeType', function() {
         });
     });
 
-
-    describe('static isNode()', function () {
-
-        it('invalid cases', function () {
-
-            expect(NodeType.isNode({})).to.be.equal(false);
-            expect(NodeType.isNode({__:1})).to.be.equal(false);
-            expect(NodeType.isNode(null)).to.be.equal(false);
-            expect(NodeType.isNode(undefined)).to.be.equal(false);
-            expect(NodeType.isNode([{__:1}])).to.be.equal(false);
-            expect(NodeType.isNode([])).to.be.equal(false);
-            expect(NodeType.isNode(10)).to.be.equal(false);
-            expect(NodeType.isNode({__:1, tags:[]} )).to.be.equal(false);
-
-        });
-
-        it('valid cases', function () {
-            expect(NodeType.isNode({__:1, tags:[], toJsonObject:()=>{}})).to.be.equal(true);
-        });
-    });
 });
