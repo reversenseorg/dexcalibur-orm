@@ -1,3 +1,5 @@
+import {INode} from "./INode";
+
 /**
  * An utility class that offers some static method to perform
  * common operation over INode or a set of INode
@@ -24,8 +26,36 @@ export class NodeUtils {
         // check fields
         ['__','tags'].map(x => check = check && (pObject.hasOwnProperty(x)));
         // check method (a part of prototype or a field of type Function)
-        ['toJsonObject'].map(x => check = check && (pObject[x]!=null));
+        ['toJsonObject','getUID'].map(x => check = check && (pObject[x]!=null));
 
         return check;
+    }
+
+    /**
+     * To serialize INode or array of INode
+     *
+     *
+     * @param {INode|INode[]} pObject The object or array to serialize
+     * @return {any} Raw objects ready to be serialized
+     * @method
+     * @static
+     */
+    static serialize(pObject:INode|INode[]):any {
+
+        if(Array.isArray(pObject)){
+            const out:any[] = [];
+            pObject.map(x => {
+                if(NodeUtils.isNode(x)){
+                    out.push(NodeUtils.serialize(x))
+                }else{
+                    out.push(x);
+                }
+            });
+            return out;
+        }else if(NodeUtils.isNode(pObject)){
+            return pObject.toJsonObject();
+        }else {
+            return pObject;
+        }
     }
 }
