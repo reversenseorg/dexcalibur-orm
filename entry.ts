@@ -21,6 +21,7 @@ import {MessageType, newLogger, ProdLogger, TestLogger } from "./src/utils/Logge
 import { IStringIndex } from "./src/core/IStringIndex.js";
 import { TagCategory, TagCategoryOptions } from "./src/search/TagCategory.js";
 import { Tag, TagOptions } from "./src/search/Tag.js";
+ import { NodeUtils } from "./src/NodeUtils.js";
 
 
 Tag.TYPE.updateProperties([
@@ -59,6 +60,7 @@ export {
     NodeInternalType,
     NodeInternalTypeMapping,
     NodeInternalTypeMap,
+    NodeUtils,
     WebConnectorFactory,
     WebConnectorOptions,
     WebConnectorOptionsMap,
@@ -108,5 +110,5 @@ export {
     TagOptions,
     TagCategoryOptions,
     NodeInternalTypeName,
-    ENodeInternalTypes
+    ENodeInternalTypes,
 };
