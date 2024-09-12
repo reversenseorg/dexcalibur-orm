@@ -1,6 +1,6 @@
-import {INode} from "./INode";
-import {Nullable} from "./core/IStringIndex";
-import {SerializeOptions} from "./IJsonSerializable";
+import {INode} from "./INode.js";
+import {Nullable} from "./core/IStringIndex.js";
+import {SerializeOptions} from "./IJsonSerializable.js";
 
 /**
  * An utility class that offers some static method to perform
