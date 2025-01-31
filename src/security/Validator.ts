@@ -1,5 +1,8 @@
+import * as NodeBuffer from "node:buffer"
 
+type StructureValidator = Record<string, ValidationRule> | ValidationRule;
 
+type StructureValidatorTree = Record<string, StructureValidator>
 
 export enum ValidationType {
     EQUAL,
@@ -7,6 +10,11 @@ export enum ValidationType {
     REGEXP,
     CUSTOM
 }
+
+// Same than AngularJs project
+const EMAIL_REGEXP =
+    /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
+
 
 export class ValidationRule {
     private _o: any = {};
@@ -17,8 +25,7 @@ export class ValidationRule {
         if(pOptions!=null){
             switch(pType){
                 case ValidationType.EQUAL:
-                    this.refValue = pOptions;
-                    break;
+                case ValidationType.PINKLIST:
                 case ValidationType.REGEXP:
                     this.refValue = pOptions;
                     break;
@@ -53,22 +60,232 @@ export class ValidationRule {
         return this._o.f;
     }
 
+    static isRule(pObject:any):boolean {
+        return  (pObject._o!=null)
+            && (pObject._o.t!=null)
+            && (pObject._o.r!=null)
+            && (pObject._o.f!=null);
+    }
+
+
+    /**
+     * @since 1.0.34
+     */
+    static asArrayOf(vRules:ValidationRule[]):ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            if(vValue==null || !Array.isArray(vValue)){
+                return false;
+            }
+
+            let ctr=0;
+            for (let i = 0; i < vValue.length; i++) {
+                vRules.map(r => {
+                    if(r.test(vValue[i])){
+                        ctr++;
+                    }
+                });
+            }
+            return (ctr==(vRules.length * vValue.length));
+        });
+    }
+
+    /**
+     * @since 1.0.0
+     */
     static newEqualAssert(pRefValue:any):ValidationRule {
         return new ValidationRule( ValidationType.EQUAL, pRefValue);
     }
 
+    /**
+     * @since 1.0.0
+     */
     static newPinklistAssert(pRefValue:any):ValidationRule {
         return new ValidationRule( ValidationType.PINKLIST, pRefValue);
     }
 
+    /**
+     * @since 1.0.0
+     */
     static newRegexpAssert(pRefValue:RegExp):ValidationRule {
         return new ValidationRule( ValidationType.REGEXP, pRefValue);
     }
 
+    /**
+     * @since 1.0.0
+     */
     static newCustomAssert(pFunc:Function):ValidationRule {
         return new ValidationRule( ValidationType.CUSTOM, pFunc);
     }
 
+    /**
+     * @since 1.0.34
+     */
+    static bool():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return (vValue===true)||(vValue===false);
+        });
+    }
+
+
+    /**
+     * @since 1.0.34
+     */
+    static utf8String():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return NodeBuffer.isUtf8(Buffer.from(vValue));
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static utf8StringList():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return ValidationRule.asArrayOf([ ValidationRule.utf8String() ]).test(vValue);
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static uintString():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return /^([0-9]+)$/.test(vValue);
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static uintStringComposite(pSeparator:string):ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return ValidationRule.asArrayOf([ ValidationRule.uintString() ]).test(vValue.split(pSeparator));
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static uuid():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(vValue);
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static prefixedUuid(pPrefix:string):ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return new RegExp("^"+pPrefix+"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$").test(vValue);
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static uuidComposite(pSeparator:string):ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return ValidationRule.asArrayOf([ ValidationRule.uuid() ]).test(vValue.split(pSeparator));
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static base64String():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(vValue);
+        });
+    }
+
+
+    /**
+     * @since 1.0.34
+     */
+    static hexColor():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return /^[0-9A-Fa-f]{6}$/.test(vValue);
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static email():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return EMAIL_REGEXP.test(vValue);
+        });
+    }
+
+
+    /**
+     * @since 1.0.34
+     */
+    static uuidList():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return ValidationRule.asArrayOf([ ValidationRule.uuid() ]).test(vValue);
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static nullableObj():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            if(vValue===null || vValue===undefined){
+                return true;
+            }
+            if(typeof vValue==='object'){
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static emailList():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return ValidationRule.asArrayOf([ ValidationRule.email() ]).test(vValue);
+        });
+    }
+
+    /**
+     * @since 1.0.34
+     */
+    static structure(pDefinition:StructureValidatorTree):ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+
+            function isObj(v):boolean{
+                //console.log(v,"isObj > ",(v==null) || (typeof v != 'object'));
+                return (v!=null) && (typeof v === 'object');
+            }
+
+            function validate(s:Record<any, any>, d:StructureValidatorTree){
+                for(let k in d){
+                    if(s[k]==null){
+                        return false
+                    }
+
+                    if(ValidationRule.isRule(d[k])){
+                        if((d[k] as ValidationRule).test(s[k])===false){
+                            return false;
+                        }
+                    }else{
+                        validate(s[k],d[k] as StructureValidatorTree);
+                    }
+                }
+
+                return true;
+            }
+
+            if(!isObj(vValue)) return false;
+
+            return validate(vValue, pDefinition);
+        });
+    }
 
     test(pData:any):boolean {
         switch(this._o.t){
@@ -131,7 +348,7 @@ export class Validator {
         this._rules = pRules;
     }
 
-    supports(pName:string):boolean {
+    supports(pName):boolean {
         return (this._rules[pName]!=null);
     }
 
