@@ -13,7 +13,7 @@ import {DataSource} from "./DataSource.js";
 import {OrmException} from "./error/OrmException.js";
 import {DataSourceHelper} from "./DataSourceHelper.js";
 import {INode} from "./INode.js";
-import {Nullable} from "./core/IStringIndex";
+import {Nullable} from "./core/IStringIndex.js";
 
 
 export interface NodePropertyMap {
