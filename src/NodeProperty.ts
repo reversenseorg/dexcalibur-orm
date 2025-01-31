@@ -376,6 +376,19 @@ export class NodeProperty {
     return this;
   }
 
+
+  /**
+   * Shortened alias for `addValidationRule()`
+   *
+   * @param {ValidationRule} pRule
+   * @return {NodeProperty}
+   * @method
+   * @since 1.0.34
+   */
+  rule( pRule:ValidationRule):NodeProperty{
+    return  this.addValidationRule(pRule);
+  }
+
   /**
    * To sanitize a value according to its validation rules
    *

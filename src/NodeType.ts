@@ -13,6 +13,7 @@ import {DataSource} from "./DataSource.js";
 import {OrmException} from "./error/OrmException.js";
 import {DataSourceHelper} from "./DataSourceHelper.js";
 import {INode} from "./INode.js";
+import {Nullable} from "./core/IStringIndex";
 
 
 export interface NodePropertyMap {
@@ -31,6 +32,10 @@ export interface NodeListenersMap {
   [event:string] :((arg:any)=>void)[]|((arg:any)=>void);
 }
 
+export interface RebuildHook {
+  fn: (vNode:INode)=>INode,
+  async: boolean
+}
 
 let Logger:Logger = newLogger() as Logger;
 
@@ -117,6 +122,15 @@ export class NodeType {
    * @field
    */
   __transforms:any = null;
+
+  /**
+   * Definition of hook to apply on object just after _relink()
+   *
+   * @type {Nullable<RebuildHook>}
+   * @field
+   */
+  _post:Nullable<RebuildHook> = null;
+
   /**
    *
    * @param {string} pName Node type name
@@ -519,5 +533,32 @@ export class NodeType {
       throw OrmException.UNDEFINED_PRIMARY_KEY(this._type);
     }
     pNode[this._pk.getName()] = pPkValue;
+  }
+
+  /**
+   * To check if a 'post rebuild' hook is defined
+   *
+   * @return {boolean}
+   * @method
+   */
+  hasPostRebuildHook():boolean{
+    return (this._post!=null);
+  }
+
+  /**
+   *
+   * Chainable
+   *
+   * @param {(vNode:INode)=>INode} pFunc
+   * @param {any} pOptions
+   * @method
+   */
+  postRebuild( pFunc:((vNode:INode)=>INode), pOptions = {async:false}):NodeType{
+    this._post = {
+      async: pOptions.async,
+      fn: pFunc
+    };
+
+    return this;
   }
 }
