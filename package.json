@@ -10,6 +10,9 @@
     "test": "DEXCALIBUR_TEST=1 mocha -r ts-node/register ./test/**/*.ts",
     "clean": "rm src/**/*.js src/**/*.d.ts"
   },
+  "publishConfig": {
+    "@dexcalibur:registry": "https://gitlab.reversense.org/api/v4/projects/25/packages/npm/"
+  },
   "repository": {
     "type": "git",
     "url": "https://git.jetbrains.space/reversense/dxc/dexcalibur-orm.git"
