@@ -11,7 +11,7 @@
     "clean": "rm src/**/*.js src/**/*.d.ts"
   },
   "publishConfig":{
-    "@dexcalibur:registry":"https://gitlab.reversense.org/api/v4/projects/25/packages/npm/"
+    "@dexcalibur:registry":"https://gitlab.reversense.org/api/packages/npm/"
   },
   "repository": {
     "type": "git",
