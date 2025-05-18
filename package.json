@@ -1,5 +1,5 @@
 {
-  "name": "@dexcalibur/dexcalibur-orm",
+  "name": "@reversense/dexcalibur-orm",
   "version": "1.0.35",
   "description": "Dexcalibur's internal ORM",
   "main": "./dist/entry.js",
