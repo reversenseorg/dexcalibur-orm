@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://git.jetbrains.space/reversense/dxc/dexcalibur-orm.git"
+    "url": "https://gitlab.reversense.org/dxc/dexcalibur-orm.git"
   },
   "keywords": [
     "orm"
