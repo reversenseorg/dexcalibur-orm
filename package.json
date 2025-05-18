@@ -5,6 +5,7 @@
   "main": "./dist/entry.js",
   "exports": "./dist/entry.js",
   "types": "./dist/entry.d.ts",
+  "private":true,
   "scripts": {
     "build": "npx tsc",
     "test": "DEXCALIBUR_TEST=1 mocha -r ts-node/register ./test/**/*.ts",
