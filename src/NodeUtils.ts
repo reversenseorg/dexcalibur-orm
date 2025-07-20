@@ -1,7 +1,7 @@
 import {INode, INodeRef} from "./INode.js";
 import {Nullable} from "./core/IStringIndex.js";
 import {SerializeOptions} from "./IJsonSerializable.js";
-import {NodeType} from "./NodeType";
+import {NodeType} from "./NodeType.js";
 
 /**
  * An utility class that offers some static method to perform
