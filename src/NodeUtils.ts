@@ -1,6 +1,7 @@
-import {INode} from "./INode.js";
+import {INode, INodeRef} from "./INode.js";
 import {Nullable} from "./core/IStringIndex.js";
 import {SerializeOptions} from "./IJsonSerializable.js";
+import {NodeType} from "./NodeType";
 
 /**
  * An utility class that offers some static method to perform
@@ -58,6 +59,17 @@ export class NodeUtils {
             return pObject.toJsonObject(pOptions);
         }else {
             return pObject;
+        }
+    }
+
+    static asNodeRef(pNode:any):INodeRef {
+
+        const type = NodeType.getByID(pNode.__);
+        if(type==null) return null;
+
+        return {
+            __:pNode.__,
+            _uid: type.getPrimaryKey().read(pNode)
         }
     }
 }
