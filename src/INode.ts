@@ -3,6 +3,11 @@ import {IJsonSerializable, SerializeOptions} from "./IJsonSerializable.js";
 import {IStringIndex} from "./core/IStringIndex.js";
 
 
+export interface INodeRef {
+  __:NodeInternalType;
+  _uid?:any;
+}
+
 export type TagUUID = number;
 
 export interface INode extends IJsonSerializable{
