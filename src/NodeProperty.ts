@@ -435,4 +435,13 @@ export class NodeProperty {
   isEmbedded():boolean {
     return this._e;
   }
+
+  /**
+   * To read value of this property from a specifid object
+   *
+   * @param {any} pNode Any node-like object
+   */
+  read( pNode:any):any {
+    return pNode[this.getName()];
+  }
 }
