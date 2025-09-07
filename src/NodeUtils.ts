@@ -2,7 +2,7 @@ import {INode, INodeRef} from "./INode.js";
 import {Nullable} from "./core/IStringIndex.js";
 import {SerializeOptions} from "./IJsonSerializable.js";
 import {NodeType} from "./NodeType.js";
-import {ValidationRule} from "./security/Validator";
+import {ValidationRule} from "./security/Validator.js";
 
 /**
  * An utility class that offers some static method to perform

@@ -1,5 +1,5 @@
 import * as NodeBuffer from "node:buffer"
-import {NodeInternalType} from "../NodeInternalType";
+import {NodeInternalType} from "../NodeInternalType.js";
 
 type StructureValidator = Record<string, ValidationRule> | ValidationRule;
 
