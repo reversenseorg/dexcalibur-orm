@@ -1,4 +1,5 @@
 import * as NodeBuffer from "node:buffer"
+import {NodeInternalType} from "../NodeInternalType";
 
 type StructureValidator = Record<string, ValidationRule> | ValidationRule;
 
@@ -240,6 +241,25 @@ export class ValidationRule {
                 return true;
             }
             return false;
+        });
+    }
+
+    /**
+     * @since 1.1.1
+     */
+    static uint64():ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return (typeof vValue==='number') && (vValue < Number.MAX_SAFE_INTEGER) && (vValue > Number.MIN_SAFE_INTEGER);
+        });
+    }
+
+    /**
+     *
+     * @since 1.1.1
+     */
+    static nodeTypeID(pNullable = false, pValid:NodeInternalType[] = []):ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return (pNullable? (vValue==null) : (vValue!=null) && (typeof vValue==='number') && (pValid.indexOf(vValue)>-1));
         });
     }
 

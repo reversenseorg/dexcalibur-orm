@@ -2,6 +2,7 @@ import {INode, INodeRef} from "./INode.js";
 import {Nullable} from "./core/IStringIndex.js";
 import {SerializeOptions} from "./IJsonSerializable.js";
 import {NodeType} from "./NodeType.js";
+import {ValidationRule} from "./security/Validator";
 
 /**
  * An utility class that offers some static method to perform
@@ -71,5 +72,21 @@ export class NodeUtils {
             __:pNode.__,
             _uid: type.getPrimaryKey().read(pNode)
         }
+    }
+
+    /**
+     * To check if the arg is strictly a INodeRef
+     *
+     * @param {any} pO Value to check
+     * @return {boolean} TRUE if the arg is a INodeRef object, else FALSE
+     * @static
+     * @since 1.1.1
+     */
+    static isNodeRef(pO:any):boolean {
+        const l = Object.entries(pO).length;
+        if(l<1 && l>3) return false;
+        if(l>=1 && !ValidationRule.nodeTypeID(false).test(pO.__)) return false;
+        if(l>=2 && (pO._uid==null || typeof pO._uid!=="string")) return false;
+        return !(l == 3 && (pO.tags == null || !ValidationRule.asArrayOf([ValidationRule.uint64()]).test(pO.tags)));
     }
 }
