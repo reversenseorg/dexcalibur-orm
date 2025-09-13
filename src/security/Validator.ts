@@ -1,5 +1,6 @@
 import * as NodeBuffer from "node:buffer"
 import {NodeInternalType} from "../NodeInternalType.js";
+import {OperatingSystem} from "../core/OperatingSystem.js";
 
 type StructureValidator = Record<string, ValidationRule> | ValidationRule;
 
@@ -162,6 +163,23 @@ export class ValidationRule {
         return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return ValidationRule.asArrayOf([ ValidationRule.uintString() ]).test(vValue.split(pSeparator));
         });
+    }
+
+
+    static os():ValidationRule {
+        return new ValidationRule( ValidationType.PINKLIST, [
+            OperatingSystem.LINUX,
+            OperatingSystem.ANDROID,
+            OperatingSystem.TOYBOX,
+            OperatingSystem.TIZEN,
+            OperatingSystem.IOS,
+            OperatingSystem.DARWIN,
+            OperatingSystem.MACOS,
+            OperatingSystem.WEB_OS,
+            OperatingSystem.FIRE_OS,
+            OperatingSystem.WINNT,
+            OperatingSystem.NONE,
+        ]);
     }
 
     /**
