@@ -63,10 +63,10 @@ export class ValidationRule {
     }
 
     static isRule(pObject:any):boolean {
-        return  (pObject._o!=null)
+        return (pObject!=null) && (pObject._o!=null)
             && (pObject._o.t!=null)
-            && (pObject._o.r!=null)
-            && (pObject._o.f!=null);
+            && ((pObject._o.r!=null)
+            || (pObject._o.f!=null));
     }
 
 
@@ -166,6 +166,13 @@ export class ValidationRule {
     }
 
 
+    /**
+     * Creates and returns a validation rule for operating systems.
+     * The rule ensures the provided operating system is included in a predefined list of supported operating systems.
+     *
+     * @return {ValidationRule} A validation rule object configured with a list of supported operating systems.
+     * @sinec 1.1.3
+     */
     static os():ValidationRule {
         return new ValidationRule( ValidationType.PINKLIST, [
             OperatingSystem.LINUX,
@@ -268,6 +275,17 @@ export class ValidationRule {
     static uint64():ValidationRule {
         return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return (typeof vValue==='number') && (vValue < Number.MAX_SAFE_INTEGER) && (vValue > Number.MIN_SAFE_INTEGER);
+        });
+    }
+
+    /**
+     * @param {number} pMin Minimum value include in the range of valid values
+     * @param {number} pMax Maximum value include in the range of valid values
+     * @since 1.1.3
+     */
+    static number(pMin:number, pMax:number):ValidationRule {
+        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+            return (typeof vValue==='number' &&  vValue>=pMin && vValue<=pMax);
         });
     }
 
@@ -377,19 +395,64 @@ export class ValidationError {
     }
 }
 
+/**
+ * The `Validator` class is responsible for validating input fields against a set of predefined rules.
+ * It maintains a collection of validation rules and any errors that occur during the validation process.
+ */
 export class Validator {
 
+    /**
+     * A variable used to store an array of error objects or messages.
+     *
+     * This array can hold any type of data related to errors, providing
+     * flexibility in the way errors are managed or logged throughout the
+     * application. It is initialized as an empty array.
+     *
+     * Type: `any[]` - Allows storage of error information of various types.
+     */
     private _err:any[] = [];
+    /**
+     * Represents a map of validation rules.
+     *
+     * The `_rules` variable is used to store a collection of validation rules
+     * where the keys represent the rule names or identifiers and the values
+     * describe the corresponding validation logic or configurations.
+     *
+     * This map is generally utilized in contexts where dynamic or named validation
+     * constraints need to be defined and accessed.
+     *
+     * @type {ValidationRulesMap}
+     */
     private _rules:ValidationRulesMap = {};
 
+    /**
+     * Creates a new instance of the class.
+     *
+     * @param {ValidationRulesMap} pRules - The validation rules map to be used.
+     * @return {void} This constructor does not return a value.
+     */
     constructor( pRules:ValidationRulesMap ) {
         this._rules = pRules;
     }
 
+    /**
+     * Checks if the provided property name is supported by evaluating
+     * if it exists in the `_rules` object.
+     *
+     * @param {string} pName - The name of the property to check support for.
+     * @return {boolean} Returns `true` if the property is supported, otherwise `false`.
+     */
     supports(pName):boolean {
         return (this._rules[pName]!=null);
     }
 
+    /**
+     * Adds a validation rule for a specific parameter name.
+     *
+     * @param {string} pName - The name of the parameter to which the validation rule applies.
+     * @param {ValidationRule} pRule - The validation rule to be added for the specified parameter name.
+     * @return {Validator} Returns the instance of the Validator to allow method chaining.
+     */
     addRule( pName:string, pRule:ValidationRule):Validator{
         if(this._rules[pName]==null){
             this._rules[pName] = [];
@@ -399,6 +462,13 @@ export class Validator {
         return this;
     }
 
+    /**
+     * Validates the given value against the defined validation rules of the specified field.
+     *
+     * @param {string} pField - The name of the field to validate.
+     * @param {any} pValue - The value to be validated against the field's rules.
+     * @return {boolean} Returns true if the value passes all validation rules for the specified field, otherwise false.
+     */
     validate(pField:string, pValue:any):boolean {
         this.clearErrors();
 
@@ -415,10 +485,20 @@ export class Validator {
         return f;
     }
 
+    /**
+     * Clears all stored errors by resetting the internal error array to an empty state.
+     *
+     * @return {void} Does not return a value.
+     */
     clearErrors(){
         this._err = [];
     }
 
+    /**
+     * Retrieves the list of validation errors.
+     *
+     * @return {ValidationError[]} An array of ValidationError objects representing the errors.
+     */
     getErrors():ValidationError[] {
         return this._err;
     }

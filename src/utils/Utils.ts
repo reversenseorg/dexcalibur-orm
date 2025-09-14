@@ -8,15 +8,18 @@ export interface SearchValueMatch {
 
 export class Utils {
 
+
     /**
-     * To search a data by regexp inside an object at a configurable depth
+     * Searches through an object recursively to find values matching a regular expression.
      *
-     * Return all matching values with access path as a string
-     *
-     * @param pObject
-     * @param pAccessPath
-     * @param pBlacklist
-     * @param tab
+     * @param {RegExp} pRegexp - The regular expression used to match values.
+     * @param {any} pObject - The object to be searched.
+     * @param {string} pAccessPath - The current access path in the object hierarchy.
+     * @param {string[]} pBlacklist - An array of keys or paths to exclude from the search.
+     * @param {number} pMaxDepth - The maximum depth of recursion; use -1 for unlimited depth.
+     * @param {SearchValueMatch[]} pMatches - An array to store matched results, with each match containing a name and value.
+     * @param {number} [pCurrDepth=0] - The current recursion depth.
+     * @return {void} This function does not return a value. Found matches are stored in the pMatches array.
      */
     static searchValue(pRegexp:RegExp, pObject: any, pAccessPath: string,
                        pBlacklist:string[], pMaxDepth:number, pMatches: SearchValueMatch[], pCurrDepth:number = 0):void {
@@ -47,15 +50,15 @@ export class Utils {
 
 
 
+
     /**
-     * To search a data by regexp inside an object at a configurable depth
+     * Retrieves the value at the specified access path within an object.
+     * The access path is a string representing nested property keys, separated by dots.
+     * Returns null if the path does not exist or if the current node is not an object.
      *
-     * Return all matching values with access path as a string
-     *
-     * @param pObject
-     * @param pAccessPath
-     * @param pBlacklist
-     * @param tab
+     * @param {any} pObject - The object from which the value will be retrieved.
+     * @param {string} pAccessPath - The dot-separated access path specifying the property to retrieve.
+     * @return {any} The value at the specified access path, or null if the path or object is invalid.
      */
     static readValue(pObject: any, pAccessPath: string):any {
 
@@ -79,15 +82,18 @@ export class Utils {
     }
 
 
+
     /**
-     * To search a data by regexp inside an object at a configurable depth
+     * Recursively walks over the properties of the given object and applies a callback function
+     * to each property. Allows exclusions via a blacklist and supports depth limitations.
      *
-     * Return all matching values with access path as a string
-     *
-     * @param pObject
-     * @param pAccessPath
-     * @param pBlacklist
-     * @param tab
+     * @param {any} pObject - The object to walk over. It can be an object or any other data type.
+     * @param {any} pCallback - The callback function to execute for each property.
+     * @param {string} pAccessPath - The current path of the property being traversed. Helps in generating full property paths.
+     * @param {string[]} pBlacklist - A list of property paths to exclude from processing.
+     * @param {number} pMaxDepth - The maximum depth to traverse. Use -1 for unlimited depth.
+     * @param {number} [pCurrDepth=0] - The current depth of the recursion. Defaults to 0.
+     * @return {any} The result of the callback function applied to the object, if applicable.
      */
     static walkOver(pObject: any, pCallback:any, pAccessPath: string,
                     pBlacklist:string[], pMaxDepth:number,  pCurrDepth:number = 0):any {
