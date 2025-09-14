@@ -1,5 +1,4 @@
 import {DataSource} from "./DataSource.js";
-import {NodeType} from "./NodeType.js";
 import * as Log from "./utils/Logger.js";
 
 let Logger:Log.Logger = Log.newLogger() as Log.Logger;

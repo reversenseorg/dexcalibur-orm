@@ -35,14 +35,13 @@ export class NodeUtils {
         return check;
     }
 
+
     /**
-     * To serialize INode or array of INode
+     * Serializes a single INode or an array of INode objects
      *
-     *
-     * @param {INode|INode[]} pObject The object or array to serialize
-     * @return {any} Raw objects ready to be serialized
-     * @method
-     * @static
+     * @param {INode|INode[]} pObject - The object or array of objects to be serialized. This can either be a single instance of `INode` or an array of `INode` instances.
+     * @param {Nullable<SerializeOptions>} [pOptions=null] - Additional options to customize the serialization process. This parameter is optional.
+     * @return {any} The serialized output, which could be an object, an array, or another data format depending on the input.
      */
     static serialize(pObject:INode|INode[], pOptions:Nullable<SerializeOptions> = null):any {
 

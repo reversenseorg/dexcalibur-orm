@@ -19,12 +19,7 @@ export default class InMemoryDbIndex implements IDbIndex
     // @ts-ignore
   private _tpl:NodeType|undefined;
 
-    /**
-     * To create a new instance
-     *
-     * @param {String} name
-     * @constructor
-     */
+
     constructor(name:string = "", pNodeType?:NodeType){
         this.name = name;
         this.refs = [];

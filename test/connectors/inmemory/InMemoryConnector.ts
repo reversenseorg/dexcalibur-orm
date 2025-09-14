@@ -35,13 +35,7 @@ export default class InMemoryConnector implements IDatabaseAdapter
 
     tmpDbs:DatabaseInstanceList = {};
 
-    /**
-     * To create a new DB
-     *
-     * @param {DexcaliburProject} pContext The project associated to this database
-     * @return {InMemoryDb}
-     * @constructor
-     */
+
     constructor(pContext:IAppContext, pOptions:any = null){
         this.ctx = pContext;
         this.options = pOptions;

@@ -19,12 +19,7 @@ export default class SerializedObject implements IStringIndex<any>
     }
   }
 
-  /**
-  * To update reference mapping
-  *
-  * @param {any} pRefs
-  * @param {boolean} pAppend Optional. If true update exisiting refs
-  */
+
   static defineReference(pRefs:any, pUpdate = false){
   if(pUpdate){
     Object.keys(pRefs).map( (k:string)=>{ SerializedObject.refs[k]=pRefs[k] });

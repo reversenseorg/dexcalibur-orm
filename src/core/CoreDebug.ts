@@ -10,13 +10,14 @@ export class CoreDebug {
 
     static CHECK_JSON = true;
 
+
     /**
-     * Helper to detect circular reference error when data are serialized.
+     * Checks if the given object can be serialized into JSON format. If serialization fails,
+     * it logs detailed debugging information to assist in identifying the issue.
      *
-     * If CoreDebug.CHECK_JSON is TRUE, then `JSON.stringify()` will be applied to the output of every `*.toJsonObject()`
-     * call
-     *
-     * @param pObject
+     * @param {any} pObject - The object to be checked for JSON serialization.
+     * @param {string} [pSource=""] - An optional source identifier to include in debug output.
+     * @return {void} This method does not return any value.
      */
     static checkJsonSerialize( pObject:any, pSource = ""):void {
         if(CoreDebug.CHECK_JSON){

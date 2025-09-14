@@ -13,7 +13,7 @@ import * as _os_ from "os";
 
 //const chalk = _chalk_.default;
 
-let PRINT:((str:any|any[])=>void) = (()=>{});
+let PRINT:((str:any|any[])=>void);
 
 
 const LOG_DEF_FILE = false;
@@ -269,7 +269,7 @@ export function newLogger(config:any =null, override:boolean =false):TestLogger|
       };
     }
 
-    if((config!==null && config.testMode) || Process.env.FORENSOC_TEST)
+    if(config!=null && config.testMode)
       loggerInstance = new TestLogger(config.debugMode);
     else
       loggerInstance = new ProdLogger(config.debugMode);

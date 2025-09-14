@@ -131,11 +131,15 @@ export class NodeType {
    */
   _post:Nullable<RebuildHook> = null;
 
+
   /**
+   * Creates an instance of the class with the specified name, internal type, and node properties.
+   * Also initializes and updates the properties for the instance.
    *
-   * @param {string} pName Node type name
-   * @param {NodeProperty[]} pCols
-   * @constructor
+   * @param {string} pName - The name of the node.
+   * @param {NodeInternalType} pInternalType - The internal type of the node.
+   * @param {NodeProperty[]} pCols - The array of node properties to be assigned and updated.
+   * @return {void} - Does not return any value.
    */
   constructor( pName:string, pInternalType:NodeInternalType, pCols:NodeProperty[]) {
     this._name = pName;

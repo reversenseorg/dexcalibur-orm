@@ -59,10 +59,24 @@ export class ConnectorFactory
     constructor() {
     }
 
+    /**
+     * Adds an adapter to the collection of adapters with an optional name.
+     *
+     * @param {any} pAdapterConstructor - The constructor or instance of the adapter to be added.
+     * @param {string} [pName=null] - The optional name to associate with the adapter. Defaults to null if not provided.
+     * @return {void} This method does not return a value.
+     */
     addAdapter(pAdapterConstructor:any, pName:string = null):void {
         this.adapters[pName] = pAdapterConstructor;
     }
 
+    /**
+     * Retrieves an adapter associated with the given name.
+     *
+     * @param {string} pName - The name of the adapter to retrieve.
+     * @return {any} The adapter instance associated with the provided name.
+     * @throws {ConnectorFactoryException} Throws an exception if the adapter is not available.
+     */
     getAdapter(pName:string):any {
         const adapter = this.adapters[pName];
         if(adapter==null){
@@ -70,12 +84,13 @@ export class ConnectorFactory
         }
         return this.adapters[pName];
     }
+
     /**
-     * To get the instance of ConnectorFactory
+     * Returns the singleton instance of the ConnectorFactory. If the instance does not exist
+     * or the `pForce` parameter is set to true, a new instance will be created and returned.
      *
-     * @param {Boolean} pForce [Optional] Default FALSE. If TRUE, current instance is overridden
-     * @returns {ConnectorFactory}
-     * @method
+     * @param {boolean} [pForce=false] - If true, forces the creation of a new instance, even if one already exists.
+     * @return {ConnectorFactory} The singleton instance of the ConnectorFactory.
      */
     static getInstance( pForce:boolean = false):ConnectorFactory{
         if(gInstance === null || pForce === true){
@@ -85,10 +100,23 @@ export class ConnectorFactory
         return gInstance;
     }
 
+    /**
+     * Configures the current instance with the provided settings.
+     *
+     * @param {ConnectorFactoryOptions} pConfig - The configuration options to apply to the instance.
+     * @return {void} This method does not return a value.
+     */
     configure(pConfig:ConnectorFactoryOptions){
       this.options = pConfig;
     }
 
+    /**
+     * Retrieves the database connector associated with the given name.
+     *
+     * @param {string} pName - The name of the connector to retrieve.
+     * @return {IDatabaseAdapter} The database adapter corresponding to the provided name.
+     * @throws {ConnectorFactoryException} If no connector is found for the specified name.
+     */
     getConnector(pName:string):IDatabaseAdapter {
       if(this.connectors[pName]==null){
         throw ConnectorFactoryException.UNKNOW_CONNECTOR(pName);
@@ -96,13 +124,16 @@ export class ConnectorFactory
 
       return this.connectors[pName];
     }
+
     /**
-     * To instanciate a new connector of a specified type
+     * Creates a new database connector instance using the specified adapter type and context.
+     * Configures the adapter with the provided options and factory-level defaults.
      *
-     * @param {String} pType Connector type. example: 'inmemory'
-     * @param {DexcaliburProject} pProject Project instance
-     * @param {Object} pOptions [Optional] Default NULL.
-     * @method
+     * @param {string} pType - The type of adapter to instantiate.
+     * @param {IAppContext} pContext - The application context to be passed to the adapter.
+     * @param {any} [pOptions={}] - Additional configuration options for the adapter.
+     * @return {IDatabaseAdapter} The instance of the requested database adapter.
+     * @throws Will throw an error if the specified adapter type is not registered.
      */
     newConnector( pType:string, pContext:IAppContext, pOptions:any = {}):IDatabaseAdapter{
         if(this.adapters[pType]==null){

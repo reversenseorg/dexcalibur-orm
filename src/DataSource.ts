@@ -56,12 +56,14 @@ export class DataSource  {
   }
 
 
+
   /**
-   * To find all instances with specified UIDs
+   * Finds multiple entries based on the node type, context, and an array of unique identifiers.
    *
-   * @param pNodeType
-   * @param pProject
-   * @param pUID
+   * @param {NodeType} pNodeType - The type of node to process.
+   * @param {any} pContext - A context object used during the operation.
+   * @param {any[]} pUID - An array of unique identifiers for performing the search.
+   * @return {any} An array of entries matching the given identifiers, or an empty array if no identifiers are provided.
    */
   findMult( pNodeType:NodeType,  pContext:any, pUID:any[]):any{
 

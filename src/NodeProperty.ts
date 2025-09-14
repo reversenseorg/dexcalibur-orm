@@ -4,7 +4,6 @@ import {ValidationRule} from "./security/Validator.js";
 import {IncomingValue, SanitizedValue, UnsafeValue} from "./security/SanitizedValue.js";
 import {IStringIndex} from "./core/IStringIndex.js";
 import {OrmException} from "./error/OrmException.js";
-import {Node} from "./INode";
 
 
 export interface NodePropertyState {
@@ -52,11 +51,14 @@ export class NodeProperty {
   _wu:any = null;
 
 
+
   /**
+   * Constructs an instance of the class.
+   * Initializes the property name after validating it to ensure it is not null, undefined, or an empty string.
    *
-   * @param pName
-   * @param pBuilder
-   * @constructor
+   * @param {string} pName - The name of the property. Must not be null, undefined, or an empty string.
+   * @throws {OrmException} If the provided name is null, undefined, or empty.
+   * @return {void}
    */
   constructor(pName:string) {
 
@@ -83,24 +85,49 @@ export class NodeProperty {
     return tpl;
   }
 
+  /**
+   * Retrieves the name associated with this instance.
+   * @return {string} The name of the instance.
+   */
   getName():string {
     return this._name;
   }
 
+  /**
+   * Marks the current instance as volatile, indicating that its value is subject to change and should not be cached or optimized for long-term stability.
+   *
+   * @return {NodeProperty} Returns the instance itself for method chaining.
+   */
   volatile():NodeProperty {
     this._v = true;
     return this;
   }
 
+  /**
+   * Determines if the current object is in a volatile state.
+   *
+   * @return {boolean} Returns true if the object is volatile, otherwise false.
+   */
   isVolatile():boolean {
     return this._v;
   }
 
+  /**
+   * Sets the uniqueness property of the NodeProperty instance.
+   *
+   * @param {boolean} pUnique - A boolean value that specifies whether the node property should be unique. Defaults to true.
+   * @return {NodeProperty} The current instance of the NodeProperty class.
+   */
   unique(pUnique = true):NodeProperty {
     this._u = pUnique;
     return this;
   }
 
+  /**
+   * Determines whether the current instance satisfies the condition of being unique.
+   *
+   * @return {boolean} Returns true if the instance is unique; otherwise, returns false.
+   */
   isUnique():boolean {
     return this._u;
   }
@@ -116,20 +143,31 @@ export class NodeProperty {
     return this;
   }
 
+  /**
+   * Retrieves the current type of the database entry.
+   *
+   * @return {DbDataType|null} The database type if set, or null if not set.
+   */
   getType():DbDataType|null {
     return this._type;
   }
 
+
   /**
-   * To set max size of the type
-   *
-   * @param pSize
+   * Sets the size of the node and returns the instance for method chaining.
+   * @param {number} pSize - The size to set for the node.
+   * @return {NodeProperty} The instance of the object for method chaining.
    */
   size(pSize:number):NodeProperty {
     this._size = pSize;
     return this;
   }
 
+  /**
+   * Retrieves the maximum allowable size.
+   *
+   * @return {number} The maximum size value.
+   */
   getMaxSize():number {
     return this._size;
   }
@@ -148,22 +186,48 @@ export class NodeProperty {
     return this;
   }
 
+  /**
+   * Retrieves the key offset value.
+   *
+   * @return {number} The key offset represented by a number.
+   */
   getKeyOffset():number {
     return this._k_p;
   }
 
+  /**
+   * Determines if the current key is a primary key.
+   *
+   * @return {boolean} Returns true if the current key is a primary key, otherwise false.
+   */
   isPrimaryKey():boolean {
     return (this._key == DbKeyType.PRIMARY);
   }
 
+  /**
+   * Determines if the current key is a foreign key.
+   *
+   * @return {boolean} true if the key is a foreign key, otherwise false.
+   */
   isForeignKey():boolean {
     return (this._key == DbKeyType.FOREIGN);
   }
 
+  /**
+   * Determines whether the key is a composite key.
+   *
+   * @return {boolean} Returns true if the key is a composite key, otherwise false.
+   */
   isCompositeKey():boolean {
     return (this._key == DbKeyType.COMPOSITE);
   }
 
+  /**
+   * Checks whether the current key matches the specified type or if the key is defined.
+   *
+   * @param {DbKeyType|null} [pKeyType=null] - The type of the key to check against. If null, checks if the key is defined.
+   * @return {boolean} Returns true if the specified condition is met, otherwise false.
+   */
   isKey(pKeyType:DbKeyType|null = null):boolean{
     if(pKeyType==null){
       return (this._key!=null);
@@ -172,11 +236,21 @@ export class NodeProperty {
     }
   }
 
+  /**
+   * Marks the current instance as not null by setting an internal flag.
+   *
+   * @return {NodeProperty} Returns the current instance for method chaining.
+   */
   notnull():NodeProperty {
     this._nnull = true;
     return this;
   }
 
+  /**
+   * Checks if the value is not null.
+   *
+   * @return {boolean} True if the value is not null, false otherwise.
+   */
   isNotNull():boolean {
     return this._nnull;
   }
@@ -192,6 +266,10 @@ export class NodeProperty {
     return this;
   }
 
+  /**
+   * Retrieves the default value of the instance.
+   * @return {any} The default value stored in the `_def` property.
+   */
   getDefaultValue():any {
     return this._def;
   }
@@ -208,15 +286,30 @@ export class NodeProperty {
     return this;
   }
 
+  /**
+   * Retrieves the serialization method associated with the instance.
+   *
+   * @return {DbSerialize|null} The serialization method if defined, otherwise null.
+   */
   getSerializeMethod():DbSerialize|null {
     return this._serialize;
   }
 
+  /**
+   * Checks whether the object has been serialized.
+   *
+   * @return {boolean} Returns true if the object has a defined serialization, otherwise false.
+   */
   isSerialized():boolean {
     return (this._serialize != null);
   }
 
 
+  /**
+   * Checks if the current data type is a boolean.
+   *
+   * @return {boolean} Returns true if the data type is boolean, otherwise false.
+   */
   isBoolean():boolean {
     return (this._type === DbDataType.BOOLEAN);
   }
@@ -239,6 +332,13 @@ export class NodeProperty {
     return this;
   }
 
+  /**
+   * Configures the node as a multiple type and optionally sets the foreign key name.
+   *
+   * @param {NodeType} pNodeType - The type of the node being configured.
+   * @param {string|null} [pFkName=null] - The optional foreign key name to associate with the node.
+   * @return {NodeProperty} The current instance of the node property after the configuration.
+   */
   multiple(pNodeType:NodeType, pFkName:string|null = null):NodeProperty {
     this._m = true;
     this._m_kn = pFkName;
@@ -250,19 +350,40 @@ export class NodeProperty {
     return this;
   }
 
+  /**
+   * Determines if the specified condition or property indicates a multiple status.
+   *
+   * @return {boolean} Returns true if the condition or property indicates it is a multiple, otherwise false.
+   */
   isMultiple():boolean {
     return this._m;
   }
 
+  /**
+   * Retrieves the name of the target foreign key.
+   *
+   * @return {string|null} The name of the target foreign key if it exists, otherwise null.
+   */
   getTargetFKName():string|null {
     return this._m_kn;
   }
 
 
+  /**
+   * Determines if the current object is a node by checking the presence of the `_n` property.
+   *
+   * @return {boolean} True if the `_n` property is not null, otherwise false.
+   */
   isNode():boolean {
     return (this._n != null);
   }
 
+  /**
+   * Retrieves the type of the current node.
+   *
+   * @return {NodeType} The type of the node associated with this instance.
+   * @throws {Error} If the node type is undefined.
+   */
   getNodeType():NodeType {
 
     if(this._n==null){
@@ -282,6 +403,12 @@ export class NodeProperty {
     return this;
   }
 
+  /**
+   * Performs a sleep operation using the specified node property state.
+   *
+   * @param {NodePropertyState} pAny - The state of the node property to process.
+   * @return {any} The result of the sleep operation.
+   */
   doSleep( pAny:NodePropertyState):any{
     return this._s(pAny);
   }
@@ -297,23 +424,52 @@ export class NodeProperty {
     return this;
   }
 
+  /**
+   * Triggers the wake-up process with the provided property state.
+   *
+   * @param {NodePropertyState} pAny - The property state used to perform the wake-up operation.
+   * @return {*} The result of the wake-up process, possibly modified or returned data from the operation.
+   */
   doWakeUp( pAny:NodePropertyState){
     return this._wu(pAny);
   }
 
+  /**
+   * Determines if the current object has a sleep state.
+   *
+   * @return {boolean} True if the object has a non-null sleep state, false otherwise.
+   */
   hasSleep(){
     return (this._s !== null);
   }
 
+  /**
+   * Checks if the wake-up state is defined.
+   *
+   * @return {boolean} True if the wake-up state (_wu) is not null, otherwise false.
+   */
   hasWakeUp(){
     return (this._wu !== null);
   }
 
+  /**
+   * Sets the source for the current instance.
+   *
+   * @param {any} pSrc - The source object or value to be set.
+   * @return {any} Returns the current instance after setting the source.
+   */
   source(pSrc:any):any {
     this._src = pSrc;
     return this;
   }
 
+  /**
+   * Checks if the current object has a source associated with it.
+   * This method determines the presence of a source by checking the `_src` property
+   * and, if not available, evaluates based on its node type.
+   *
+   * @return {boolean} Returns `true` if a source is present or inherited from the node type; otherwise, returns `false`.
+   */
   hasSource():boolean{
     if(this._src != null) {
       return true
@@ -333,6 +489,10 @@ export class NodeProperty {
     return false;
   }
 
+  /**
+   * Retrieves the source property of the object.
+   * @return {any} The current value of the source property.
+   */
   getSource():any{
     return this._src;
   }

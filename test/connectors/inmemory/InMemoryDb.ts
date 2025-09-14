@@ -25,13 +25,7 @@ class InMemoryDb implements IDatabase
     indexes:any = {};
     sizes:any = {};
 
-    /**
-     * To create a new DB
-     *
-     * @param {DexcaliburProject} pContext The project associated to this database
-     * @return {InMemoryDb}
-     * @constructor
-     */
+
     constructor(pConnector:InMemoryConnector){
         this.conn = pConnector;
         this.indexes = {};
@@ -183,7 +177,7 @@ class InMemoryDb implements IDatabase
     }
 
     serialize():any{
-        let o:any=new Object();
+        let o:any = {};
 
         o.indexes = {};
         for(let i in this.indexes){
