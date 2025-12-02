@@ -26,10 +26,10 @@
   "devDependencies": {
     "@types/chai": "^4.3.19",
     "@types/mocha": "^10.0.7",
-    "@types/node": "^20.6.2",
     "chai": "^4.5.0",
     "mocha": "^10.7.3",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "undici-types": "^7.16.0"
   }
 }
