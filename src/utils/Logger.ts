@@ -4,14 +4,9 @@ IMPORTANT :
 This file should not include any file from project (recursive dependency)
 */
 
-
-import {chalk} from "./Chalk.js";
 import * as Process from 'process';
 import * as _fs_ from "fs";
 import * as _os_ from "os";
-
-
-//const chalk = _chalk_.default;
 
 let PRINT:((str:any|any[])=>void);
 
@@ -192,13 +187,13 @@ export class ProdLogger implements Logger
   }
 
   error(...args :any[]):LoggerAction{
-    PRINT(chalk.bold.red('[ERROR] '+this.prefix.join("")+multi_concat(args)));
+    PRINT('[ERROR] '+this.prefix.join("")+multi_concat(args));
     return LoggerAction;
   }
 
   debug(...args :any[]):LoggerAction{
     if(this.debugEnabled)
-      PRINT(chalk.bold.blue('[DEBUG] '+this.prefix.join("")+multi_concat(args)));
+      PRINT('[DEBUG] '+this.prefix.join("")+multi_concat(args));
     return LoggerAction;
   }
 
@@ -214,25 +209,25 @@ export class ProdLogger implements Logger
    */
   debugPink(...args :any[]):LoggerAction{
     if(this.debugEnabled)
-      PRINT(chalk.bold.magenta('[DEBUG] '+this.prefix.join("")+multi_concat(args)));
+      PRINT('[DEBUG] '+this.prefix.join("")+multi_concat(args));
     return LoggerAction;
   }
 
 
   debugBgRed(...args :any[]):LoggerAction{
     if(this.debugEnabled)
-      PRINT(chalk.white.bgRed.bold('[DEBUG] '+this.prefix.join("")+multi_concat(args)));
+      PRINT('[DEBUG] '+this.prefix.join("")+multi_concat(args));
     return LoggerAction;
   }
 
   warn(...args :any[]):LoggerAction{
     if(this.debugEnabled)
-      PRINT(chalk.bold.yellow('[DEBUG] '+this.prefix.join("")+multi_concat(args)));
+      PRINT('[DEBUG] '+this.prefix.join("")+multi_concat(args));
     return LoggerAction;
   }
 
   success(...args :any[]):LoggerAction{
-    PRINT(chalk.bold.green(this.prefix.join("")+multi_concat(args)));
+    PRINT(this.prefix.join("")+multi_concat(args));
     return LoggerAction;
   }
 

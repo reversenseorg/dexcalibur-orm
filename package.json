@@ -1,6 +1,6 @@
 {
   "name": "@dexcalibur/dexcalibur-orm",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Dexcalibur's internal ORM",
   "main": "./dist/entry.js",
   "exports": "./dist/entry.js",
@@ -22,9 +22,6 @@
   ],
   "author": "Georges-Bastien Michel <georges@reversense.com>",
   "license": "SEE LICENSE IN LICENSE.TXT",
-  "dependencies": {
-    "chalk": "^5.2.0"
-  },
   "type": "module",
   "devDependencies": {
     "@types/chai": "^4.3.19",

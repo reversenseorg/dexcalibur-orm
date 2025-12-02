@@ -2,7 +2,7 @@ import {DbDataType, DbKeyType, DbSerialize} from "./DbAbstraction.js";
 import {NodeType} from "./NodeType.js";
 import {ValidationRule} from "./security/Validator.js";
 import {IncomingValue, SanitizedValue, UnsafeValue} from "./security/SanitizedValue.js";
-import {IStringIndex} from "./core/IStringIndex.js";
+import {IStringIndex, Nullable} from "./core/IStringIndex.js";
 import {OrmException} from "./error/OrmException.js";
 
 
@@ -28,6 +28,12 @@ export class NodeProperty {
   _u:boolean = false;
   _m:boolean = false;
   _e:boolean = false;
+    /**
+     * The name of the local property where INodeRef is stored.
+     * @type {string|null}
+     * @field
+     */
+  _r:string|null = null;
 
   /**
    * Foreign Key name into target node
@@ -318,13 +324,15 @@ export class NodeProperty {
   /**
    * To set the serializing method : JSON, XML, ..
    *
-   * @param {NodeType} pNode The node template of the instance stored into this property
+   * @param {NodeType} pNodeType The node template of the instance stored into this property
+   * @param {Nullable<string>} pRefPpt Default NULL. The name of the property referencing the node as INodeRef
    * @return {NodeProperty} This instance. Chainable
    * @method
    */
-  single(pNodeType:NodeType):NodeProperty{
+  single(pNodeType:NodeType, pRefPpt:Nullable<string> = null):NodeProperty{
     this._n = pNodeType;
     this._m = false;
+    this._r = pRefPpt;
 
     if(pNodeType.hasSource())
       this.source(pNodeType.getSource());
