@@ -793,7 +793,7 @@ describe('NodeProperty', function() {
             const values = ppt.toArrayValue(["_name", "_n", "_r"], NodeTransform.NONE);
 
             expect(values[0]).to.equal("refProp");
-            expect(values[1]).to.equal(nodeType);
+            expect(values[1]).to.equal(50);
             expect(values[2]).to.equal("ref_property");
         });
 
