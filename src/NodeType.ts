@@ -622,6 +622,24 @@ export class NodeType {
                   default:
                        return this._ppts;
               }
+          }else if(vPpt==="_pk"){
+              switch (pTransform){
+                  case NodeTransform.JSON:
+                  case NodeTransform.ARRAY:
+                      return (this._pk !=null ? this._pk.getName() : null);
+                  case NodeTransform.NONE:
+                  default:
+                      return this._pk;
+              }
+          }else if(vPpt==="_cpk"){
+              switch (pTransform){
+                  case NodeTransform.JSON:
+                  case NodeTransform.ARRAY:
+                      return (this._cpk !=null ? this._cpk.map(p => p.getName()) : null);
+                  case NodeTransform.NONE:
+                  default:
+                      return this._cpk;
+              }
           }else{
               return this[vPpt];
           }
