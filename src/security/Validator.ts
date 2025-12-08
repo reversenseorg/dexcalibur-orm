@@ -357,6 +357,13 @@ export class ValidationRule {
                 return false;
         }
     }
+
+    toJsonObject():any {
+        return {
+            type:this.type,
+            ref:(typeof this.refValue != 'function' ? this.refValue : null)
+        }
+    }
 }
 
 

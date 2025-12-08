@@ -2,7 +2,7 @@ import {expect} from "chai";
 import {NodeProperty, NodePropertyState} from "../src/NodeProperty.js";
 import {DbDataType, DbKeyType, DbSerialize} from "../src/DbAbstraction.js";
 import {Node} from "../src/INode.js";
-import {NodeType} from "../src/NodeType.js";
+import {NodeTransform, NodeType} from "../src/NodeType.js";
 import {IStringIndex} from "../src/core/IStringIndex.js";
 
 
@@ -293,6 +293,235 @@ describe('NodeType', function() {
             expect(stub_A[Stub.__.getPrimaryKey().getName()]).to.be.equal(1);
 
         });
+    });
+
+
+
+    describe('toArrayHeaders', function () {
+
+
+            const CUSTOM_NODE_INTERNAL_TYPE = 10;
+
+            const node_t = new NodeType( "hook_session", CUSTOM_NODE_INTERNAL_TYPE,
+                [
+                    (new NodeProperty("_uid")).type(DbDataType.STRING).key(DbKeyType.PRIMARY),
+                    (new NodeProperty("hookManager")).volatile(),
+                    (new NodeProperty("sets_matches")).volatile().def(null),
+                    (new NodeProperty("time")).type(DbDataType.NUMERIC).def(-1),
+                    (new NodeProperty("frida"))
+                        .type(DbDataType.STRING)
+                        .sleep( (x:NodePropertyState)=>{
+                            if(x.p==null) return {};
+
+                            return JSON.stringify({
+                                pid: x.p.pid,
+                                session: null,
+                                device: null,
+                                script: null
+                            });
+                        })
+                        .wakeUp( (x:NodePropertyState)=>{
+                            return (x.p!=null ? JSON.parse(x.p) : null);
+                        })
+                        .def(0),
+                    (new NodeProperty("active")).type(DbDataType.BOOLEAN).def(false),
+                    (new NodeProperty("opts")).type(DbDataType.STRING).serialize(DbSerialize.JSON).def(null),
+                    (new NodeProperty("offset")).type(DbDataType.NUMERIC).def(0),
+                    (new NodeProperty("evTags"))
+                        .type(DbDataType.STRING)
+                        .sleep( (x:NodePropertyState)=>{
+                            //const t = Object.keys(x.p);
+                            return JSON.stringify(Object.keys(x.p));
+                        })
+                        .wakeUp( (x:NodePropertyState)=>{ return (x.p!=null ? JSON.parse(x.p) : null)})
+                        .def(0)
+                ]);
+
+            it('all properties', function (){
+                const col = NodeType.toArrayHeader();
+                expect(col).to.have.members([
+                    "_name",
+                    "_type",
+                    "_ppts",
+                    "_pk",
+                    "_wrap",
+                    "_dsa",
+                    "_ds",
+                    "_cpk"
+                ]);
+            });
+
+            it('filtered properties', function (){
+                const col = NodeType.toArrayHeader(['aaa']);
+                expect(col).to.have.members([
+                    "_name",
+                    "_type",
+                    "_ppts",
+                    "_pk",
+                    "_wrap",
+                    "_dsa",
+                    "_ds",
+                    "_cpk",
+                    "aaa"
+                ]);
+            });
+
+            it('no properties', function (){
+                const col = NodeType.toArrayHeader([]);
+                expect(col).to.have.members([
+                    "_name",
+                    "_type",
+                    "_ppts",
+                    "_pk",
+                    "_wrap",
+                    "_dsa",
+                    "_ds",
+                    "_cpk"
+                ]);
+            });
+    });
+
+    describe('toArrayValue', function () {
+
+
+        const CUSTOM_NODE_INTERNAL_TYPE = 10;
+
+        const node_t = new NodeType( "hook_session", CUSTOM_NODE_INTERNAL_TYPE,
+            [
+                (new NodeProperty("_uid")).type(DbDataType.STRING).key(DbKeyType.PRIMARY),
+                (new NodeProperty("hookManager")).volatile(),
+                (new NodeProperty("sets_matches")).volatile().def(null),
+                (new NodeProperty("time")).type(DbDataType.NUMERIC).def(-1),
+                (new NodeProperty("frida"))
+                    .type(DbDataType.STRING)
+                    .sleep( (x:NodePropertyState)=>{
+                        if(x.p==null) return {};
+
+                        return JSON.stringify({
+                            pid: x.p.pid,
+                            session: null,
+                            device: null,
+                            script: null
+                        });
+                    })
+                    .wakeUp( (x:NodePropertyState)=>{
+                        return (x.p!=null ? JSON.parse(x.p) : null);
+                    })
+                    .def(0),
+                (new NodeProperty("active")).type(DbDataType.BOOLEAN).def(false),
+                (new NodeProperty("opts")).type(DbDataType.STRING).serialize(DbSerialize.JSON).def(null),
+                (new NodeProperty("offset")).type(DbDataType.NUMERIC).def(0),
+                (new NodeProperty("evTags"))
+                    .type(DbDataType.STRING)
+                    .sleep( (x:NodePropertyState)=>{
+                        //const t = Object.keys(x.p);
+                        return JSON.stringify(Object.keys(x.p));
+                    })
+                    .wakeUp( (x:NodePropertyState)=>{ return (x.p!=null ? JSON.parse(x.p) : null)})
+                    .def(0)
+            ]);
+
+        it('properties:subset, transform: none', function (){
+            const values = node_t.toArrayValue([
+                "_name",
+                "_type",
+                "_ppts"
+            ], NodeTransform.NONE);
+
+            expect(values[0]).to.be.equal("hook_session");
+            expect(values[1]).to.be.equal(CUSTOM_NODE_INTERNAL_TYPE);
+            expect((values[2]._uid as NodeProperty).getName()).to.be.equal("_uid");
+            expect((values[2].hookManager as NodeProperty).getName()).to.be.equal("hookManager");
+            expect(values[3]).to.be.equal(undefined);
+        });
+
+        it('properties: subset, transform: json', function (){
+            const values = node_t.toArrayValue([
+                "_name",
+                "_type",
+                "_ppts"
+            ], NodeTransform.JSON);
+
+            expect(values[0]).to.be.equal("hook_session");
+            expect(values[1]).to.be.equal(CUSTOM_NODE_INTERNAL_TYPE);
+            expect(values[2]._uid.name).to.be.equal("_uid");
+            expect(values[2]._uid.type).to.be.equal(DbDataType.STRING);
+            expect(values[2]._uid.keyType).to.be.equal(DbKeyType.PRIMARY);
+            expect(values[3]).to.be.equal(undefined);
+        });
+
+
+        it('properties: subset, transform: array', function (){
+            const values = node_t.toArrayValue([
+                "_name",
+                "_type",
+                "_ppts"
+            ], NodeTransform.ARRAY);
+
+            const header = NodeProperty.toArrayHeader();
+
+            expect(values[0]).to.be.equal("hook_session");
+            expect(values[1]).to.be.equal(CUSTOM_NODE_INTERNAL_TYPE);
+            expect(values[2][0][header.indexOf("_name")]).to.be.equal("_uid");
+            expect(values[2][2][header.indexOf("_name")]).to.be.equal("sets_matches");
+            expect(values[2][0][header.indexOf("_type")]).to.be.equal(DbDataType.STRING);
+            expect(values[3]).to.be.equal(undefined);
+        });
+
+    });
+
+
+    describe('toJsonObject', function () {
+
+        it('all ', function () {
+
+            const CUSTOM_NODE_INTERNAL_TYPE = 10;
+
+            const node_t = new NodeType( "hook_session", CUSTOM_NODE_INTERNAL_TYPE,
+                [
+                    (new NodeProperty("_uid")).type(DbDataType.STRING).key(DbKeyType.PRIMARY),
+                    (new NodeProperty("hookManager")).volatile(),
+                    (new NodeProperty("sets_matches")).volatile().def(null),
+                    (new NodeProperty("time")).type(DbDataType.NUMERIC).def(-1),
+                    (new NodeProperty("frida"))
+                        .type(DbDataType.STRING)
+                        .sleep( (x:NodePropertyState)=>{
+                            if(x.p==null) return {};
+
+                            return JSON.stringify({
+                                pid: x.p.pid,
+                                session: null,
+                                device: null,
+                                script: null
+                            });
+                        })
+                        .wakeUp( (x:NodePropertyState)=>{
+                            return (x.p!=null ? JSON.parse(x.p) : null);
+                        })
+                        .def(0),
+                    (new NodeProperty("active")).type(DbDataType.BOOLEAN).def(false),
+                    (new NodeProperty("opts")).type(DbDataType.STRING).serialize(DbSerialize.JSON).def(null),
+                    (new NodeProperty("offset")).type(DbDataType.NUMERIC).def(0),
+                    (new NodeProperty("evTags"))
+                        .type(DbDataType.STRING)
+                        .sleep( (x:NodePropertyState)=>{
+                            //const t = Object.keys(x.p);
+                            return JSON.stringify(Object.keys(x.p));
+                        })
+                        .wakeUp( (x:NodePropertyState)=>{ return (x.p!=null ? JSON.parse(x.p) : null)})
+                        .def(0)
+                ]);
+
+
+            console.log(node_t.toJsonObject(true))
+            /*
+            expect(node_t).to.be.instanceOf(NodeType);
+            expect(node_t.getName()).to.equal("hook_session");
+            expect(node_t.getType()).to.equal(CUSTOM_NODE_INTERNAL_TYPE);
+            expect(node_t.getProperties().length).to.equal(9);*/
+        });
+
+
     });
 
 });

@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import {NodeProperty, NodePropertyState} from "../src/NodeProperty.js";
 import {DbDataType, DbKeyType, DbSerialize} from "../src/DbAbstraction.js";
-import {NodeType} from "../src/NodeType.js";
+import {NodeTransform, NodeType} from "../src/NodeType.js";
 import {NodeInternalType} from "../src/NodeInternalType.js";
 import {INode} from "../src/INode.js";
 
@@ -427,4 +427,411 @@ describe('NodeProperty', function() {
 
     });
 
+
+
+    describe('toJsonObject', function () {
+
+        it('should export NodeProperty definition with all fields', function () {
+            const ppt = new NodeProperty("testProp")
+                .type(DbDataType.STRING)
+                .size(255)
+                .key(DbKeyType.PRIMARY)
+                .notnull()
+                .def("default_value")
+                .serialize(DbSerialize.JSON)
+                .unique()
+                .volatile();
+
+            const obj = ppt.toJsonObject();
+
+            expect(obj.name).to.equal("testProp");
+            expect(obj.type).to.equal(DbDataType.STRING);
+            expect(obj.size).to.equal(255);
+            expect(obj.keyType).to.equal(DbKeyType.PRIMARY);
+            expect(obj.composedKeyPart).to.equal(0);
+            expect(obj.isIndex).to.equal(false);
+            expect(obj.notNull).to.equal(true);
+            expect(obj.defaultValue).to.equal("default_value");
+            expect(obj.serializeFormat).to.equal(DbSerialize.JSON);
+            expect(obj.nodeType).to.equal(null);
+            expect(obj.volatile).to.equal(true);
+            expect(obj.unique).to.equal(true);
+            expect(obj.isMultiple).to.equal(false);
+            expect(obj.isEmbedded).to.equal(false);
+            expect(obj.nodeRefPpt).to.equal(null);
+            expect(obj.foreignKeyName).to.equal(null);
+            expect(obj.source).to.equal(null);
+            expect(obj.validate).to.be.an('array').that.is.empty;
+            expect(obj.sleepHook).to.equal(false);
+            expect(obj.wakeupHook).to.equal(false);
+        });
+
+        it('should export NodeProperty with node type reference', function () {
+            const nodeType = new NodeType("hook_session", 11, [
+                (new NodeProperty("_uid")).type(DbDataType.INTEGER).key(DbKeyType.PRIMARY)
+            ]);
+
+            const ppt = new NodeProperty("session")
+                .single(nodeType, "session_ref")
+                .def(null);
+
+            const obj = ppt.toJsonObject();
+
+            expect(obj.name).to.equal("session");
+            expect(obj.nodeType).to.equal("hook_session");
+            expect(obj.nodeRefPpt).to.equal("session_ref");
+            expect(obj.isMultiple).to.equal(false);
+        });
+
+        it('should export NodeProperty with multiple nodes', function () {
+            const messageType = new NodeType("message", 12, [
+                (new NodeProperty("_uid")).type(DbDataType.STRING).key(DbKeyType.PRIMARY)
+            ]);
+
+            const ppt = new NodeProperty("messages")
+                .multiple(messageType, "session_id")
+                .embed();
+
+            const obj = ppt.toJsonObject();
+
+            expect(obj.name).to.equal("messages");
+            expect(obj.nodeType).to.equal("message");
+            expect(obj.isMultiple).to.equal(true);
+            expect(obj.isEmbedded).to.equal(true);
+            expect(obj.foreignKeyName).to.equal("session_id");
+        });
+
+        it('should export NodeProperty with sleep and wakeup hooks', function () {
+            const ppt = new NodeProperty("tags")
+                .type(DbDataType.STRING)
+                .sleep((x: NodePropertyState) => {
+                    return JSON.stringify(x.p);
+                })
+                .wakeUp((x: NodePropertyState) => {
+                    return (x.p != null ? JSON.parse(x.p) : null);
+                })
+                .def("[]");
+
+            const obj = ppt.toJsonObject();
+
+            expect(obj.name).to.equal("tags");
+            expect(obj.sleepHook).to.equal(true);
+            expect(obj.wakeupHook).to.equal(true);
+            expect(obj.defaultValue).to.equal("[]");
+        });
+
+        it('should export NodeProperty with composite key', function () {
+            const ppt = new NodeProperty("date")
+                .type(DbDataType.STRING)
+                .key(DbKeyType.COMPOSITE, 2);
+
+            const obj = ppt.toJsonObject();
+
+            expect(obj.name).to.equal("date");
+            expect(obj.keyType).to.equal(DbKeyType.COMPOSITE);
+            expect(obj.composedKeyPart).to.equal(2);
+        });
+
+        it('should export NodeProperty with validation rules', function () {
+            const rule1 = {
+                test: (val: any) => val.length > 0,
+                toJsonObject: () => ({ type: "length", min: 1 })
+            };
+            const rule2 = {
+                test: (val: any) => val.length < 100,
+                toJsonObject: () => ({ type: "length", max: 100 })
+            };
+
+            const ppt = new NodeProperty("name")
+                .type(DbDataType.STRING)
+                .addValidationRule(rule1 as any)
+                .addValidationRule(rule2 as any);
+
+            const obj = ppt.toJsonObject();
+
+            expect(obj.name).to.equal("name");
+            expect(obj.validate).to.be.an('array').with.lengthOf(2);
+            expect(obj.validate[0].type).to.equal("length");
+            expect(obj.validate[0].min).to.equal(1);
+            expect(obj.validate[1].max).to.equal(100);
+        });
+
+        it('should export minimal NodeProperty with defaults', function () {
+            const ppt = new NodeProperty("simpleProp");
+
+            const obj = ppt.toJsonObject();
+
+            expect(obj.name).to.equal("simpleProp");
+            expect(obj.type).to.equal(null);
+            expect(obj.size).to.equal(-1);
+            expect(obj.keyType).to.equal(null);
+            expect(obj.volatile).to.equal(false);
+            expect(obj.unique).to.equal(false);
+            expect(obj.isMultiple).to.equal(false);
+            expect(obj.isEmbedded).to.equal(false);
+        });
+    });
+
+
+    describe('toArrayHeader', function () {
+
+        it('should return all property names', function () {
+            const header = NodeProperty.toArrayHeader();
+
+            expect(header).to.have.members([
+                "_name",
+                "_type",
+                "_size",
+                "_key",
+                "_k_p",
+                "_idx",
+                "_nnull",
+                "_def",
+                "_serialize",
+                "_n",
+                "_v",
+                "_u",
+                "_m",
+                "_e",
+                "_r",
+                "_m_kn",
+                "_src",
+                "_val",
+                "_s",
+                "_wu"
+            ]);
+        });
+
+        it('should return property names with additional fields', function () {
+            const header = NodeProperty.toArrayHeader(["custom1", "custom2"]);
+
+            expect(header).to.have.members([
+                "_name",
+                "_type",
+                "_size",
+                "_key",
+                "_k_p",
+                "_idx",
+                "_nnull",
+                "_def",
+                "_serialize",
+                "_n",
+                "_v",
+                "_u",
+                "_m",
+                "_e",
+                "_r",
+                "_m_kn",
+                "_src",
+                "_val",
+                "_s",
+                "_wu",
+                "custom1",
+                "custom2"
+            ]);
+        });
+    });
+
+    describe('toArrayValue', function () {
+
+        it('should export values for subset of properties with NONE transform', function () {
+            const ppt = new NodeProperty("testProp")
+                .type(DbDataType.STRING)
+                .size(255)
+                .key(DbKeyType.PRIMARY)
+                .notnull()
+                .def("default_value")
+                .unique();
+
+            const values = ppt.toArrayValue([
+                "_name",
+                "_type",
+                "_size",
+                "_key"
+            ], NodeTransform.NONE);
+
+            expect(values[0]).to.equal("testProp");
+            expect(values[1]).to.equal(DbDataType.STRING);
+            expect(values[2]).to.equal(255);
+            expect(values[3]).to.equal(DbKeyType.PRIMARY);
+        });
+
+        it('should export all properties with NONE transform', function () {
+            const ppt = new NodeProperty("fullProp")
+                .type(DbDataType.INTEGER)
+                .size(11)
+                .key(DbKeyType.FOREIGN, 1)
+                .notnull()
+                .def(100)
+                .unique()
+                .volatile();
+
+            const header = NodeProperty.toArrayHeader();
+            const values = ppt.toArrayValue(header, NodeTransform.NONE);
+
+            expect(values[header.indexOf("_name")]).to.equal("fullProp");
+            expect(values[header.indexOf("_type")]).to.equal(DbDataType.INTEGER);
+            expect(values[header.indexOf("_size")]).to.equal(11);
+            expect(values[header.indexOf("_key")]).to.equal(DbKeyType.FOREIGN);
+            expect(values[header.indexOf("_k_p")]).to.equal(1);
+            expect(values[header.indexOf("_nnull")]).to.equal(true);
+            expect(values[header.indexOf("_def")]).to.equal(100);
+            expect(values[header.indexOf("_v")]).to.equal(true);
+            expect(values[header.indexOf("_u")]).to.equal(true);
+        });
+
+        it('should export validation rules with NONE transform', function () {
+            const rule1 = {
+                test: (val: any) => val.length > 0,
+                toJsonObject: () => ({ type: "length", min: 1 })
+            };
+
+            const ppt = new NodeProperty("validatedProp")
+                .type(DbDataType.STRING)
+                .addValidationRule(rule1 as any);
+
+            const values = ppt.toArrayValue(["_name", "_val"], NodeTransform.NONE);
+
+            expect(values[0]).to.equal("validatedProp");
+            expect(values[1]).to.be.an('array').with.lengthOf(1);
+            expect(values[1][0]).to.equal(rule1);
+        });
+
+        /*it('should export validation rules with JSON transform', function () {
+            const rule1 = {
+                test: (val: any) => val.length > 0,
+                toJsonObject: () => ({ type: "length", min: 1 })
+            };
+            const rule2 = {
+                test: (val: any) => val.length < 100,
+                toJsonObject: () => ({ type: "length", max: 100 })
+            };
+
+            const ppt = new NodeProperty("validatedProp")
+                .type(DbDataType.STRING)
+                .addValidationRule(rule1 as any)
+                .addValidationRule(rule2 as any);
+
+            const values = ppt.toArrayValue(["_name", "_val"], NodeTransform.JSON);
+
+            expect(values[0]).to.equal("validatedProp");
+            expect(values[1]).to.be.an('array').with.lengthOf(2);
+            expect(values[1][0].type).to.equal("length");
+            expect(values[1][0].min).to.equal(1);
+            expect(values[1][1].max).to.equal(100);
+        });*/
+
+        it('should export validation rules with ARRAY transform', function () {
+            const rule1 = {
+                test: (val: any) => val.length > 0,
+                toJsonObject: () => ({ type: "length", min: 1 })
+            };
+
+            const ppt = new NodeProperty("validatedProp")
+                .type(DbDataType.STRING)
+                .addValidationRule(rule1 as any);
+
+            const values = ppt.toArrayValue(["_name", "_val"], NodeTransform.ARRAY);
+
+            expect(values[0]).to.equal("validatedProp");
+            expect(values[1]).to.be.an('array').with.lengthOf(1);
+            expect(values[1][0]).to.equal(rule1);
+        });
+
+        it('should handle sleep and wakeup hooks with NONE transform', function () {
+            const sleepFn = (x: NodePropertyState) => JSON.stringify(x.p);
+            const wakeUpFn = (x: NodePropertyState) => JSON.parse(x.p);
+
+            const ppt = new NodeProperty("hookProp")
+                .type(DbDataType.STRING)
+                .sleep(sleepFn)
+                .wakeUp(wakeUpFn);
+
+            const values = ppt.toArrayValue(["_name", "_s", "_wu"], NodeTransform.NONE);
+
+            expect(values[0]).to.equal("hookProp");
+            expect(values[1]).to.equal(sleepFn);
+            expect(values[2]).to.equal(wakeUpFn);
+        });
+
+        it('should return null for hooks with JSON transform', function () {
+            const sleepFn = (x: NodePropertyState) => JSON.stringify(x.p);
+            const wakeUpFn = (x: NodePropertyState) => JSON.parse(x.p);
+
+            const ppt = new NodeProperty("hookProp")
+                .type(DbDataType.STRING)
+                .sleep(sleepFn)
+                .wakeUp(wakeUpFn);
+
+            const values = ppt.toArrayValue(["_name", "_s", "_wu"], NodeTransform.JSON);
+
+            expect(values[0]).to.equal("hookProp");
+            expect(values[1]).to.equal(null);
+            expect(values[2]).to.equal(null);
+        });
+
+        it('should return null for hooks with ARRAY transform', function () {
+            const sleepFn = (x: NodePropertyState) => JSON.stringify(x.p);
+
+            const ppt = new NodeProperty("hookProp")
+                .type(DbDataType.STRING)
+                .sleep(sleepFn);
+
+            const values = ppt.toArrayValue(["_s"], NodeTransform.ARRAY);
+
+            expect(values[0]).to.equal(null);
+        });
+
+        it('should export with node type reference', function () {
+            const nodeType = new NodeType("referenced_node", 50, [
+                (new NodeProperty("_uid")).type(DbDataType.INTEGER).key(DbKeyType.PRIMARY)
+            ]);
+
+            const ppt = new NodeProperty("refProp")
+                .single(nodeType, "ref_property");
+
+            const values = ppt.toArrayValue(["_name", "_n", "_r"], NodeTransform.NONE);
+
+            expect(values[0]).to.equal("refProp");
+            expect(values[1]).to.equal(nodeType);
+            expect(values[2]).to.equal("ref_property");
+        });
+
+        it('should export multiple node reference', function () {
+            const nodeType = new NodeType("multiple_node", 51, [
+                (new NodeProperty("_uid")).type(DbDataType.STRING).key(DbKeyType.PRIMARY)
+            ]);
+
+            const ppt = new NodeProperty("multiProp")
+                .multiple(nodeType, "foreign_key_name")
+                .embed();
+
+            const values = ppt.toArrayValue(["_name", "_m", "_e", "_m_kn"], NodeTransform.NONE);
+
+            expect(values[0]).to.equal("multiProp");
+            expect(values[1]).to.equal(true);
+            expect(values[2]).to.equal(true);
+            expect(values[3]).to.equal("foreign_key_name");
+        });
+
+        it('should handle empty property list', function () {
+            const ppt = new NodeProperty("emptyTest")
+                .type(DbDataType.STRING);
+
+            const values = ppt.toArrayValue([], NodeTransform.NONE);
+
+            expect(values).to.be.an('array').that.is.empty;
+        });
+
+        it('should handle serialization format', function () {
+            const ppt = new NodeProperty("serializedProp")
+                .type(DbDataType.STRING)
+                .serialize(DbSerialize.JSON);
+
+            const values = ppt.toArrayValue(["_name", "_serialize"], NodeTransform.NONE);
+
+            expect(values[0]).to.equal("serializedProp");
+            expect(values[1]).to.equal(DbSerialize.JSON);
+        });
+    });
 });

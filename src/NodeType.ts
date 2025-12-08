@@ -15,7 +15,11 @@ import {DataSourceHelper} from "./DataSourceHelper.js";
 import {INode} from "./INode.js";
 import {Nullable} from "./core/IStringIndex.js";
 
-
+export enum NodeTransform {
+    NONE = 0,
+    JSON = 1,
+    ARRAY = 2
+}
 export interface NodePropertyMap {
   [pptName:string] :NodeProperty;
 }
@@ -565,4 +569,63 @@ export class NodeType {
 
     return this;
   }
+
+  toJsonObject(pAll = false):any{
+    const o:any = {
+        _name:this._name,
+        _type:this._type,
+        _ppts: {},
+        _pk: this._pk,
+        _wrap: this._wrap,
+        _dsa: this._dsa,
+        _ds: this._ds,
+        _cpk: this._cpk
+    };
+
+      for(let k in this._ppts) {
+          o._ppts[k] = this._ppts[k].toJsonObject();
+      }
+
+    return o;
+  }
+
+  static toArrayHeader( pJoin:string[] = []):string[]{
+    return [
+        "_name",
+        "_type",
+        "_ppts",
+        "_pk",
+        "_wrap",
+        "_dsa",
+        "_ds",
+        "_cpk"
+    ].concat(pJoin);
+  }
+
+  toArrayValue(pNames:string[] = [], pTransform:NodeTransform = NodeTransform.NONE):any[] {
+      return pNames.map((vPpt:string)=> {
+          if(vPpt==="_ppts"){
+              switch (pTransform){
+                  case NodeTransform.JSON:
+                      const o:any = {};
+                      for(let k in this._ppts) {
+                          o[k] = this._ppts[k].toJsonObject();
+                      }
+                      return o;
+                  case NodeTransform.ARRAY:
+                      const a:any[] = [];
+                      for(let k in this._ppts) {
+                          a.push(this._ppts[k].toArrayValue(NodeProperty.toArrayHeader(), NodeTransform.ARRAY));
+                      }
+                      return a;
+                  case NodeTransform.NONE:
+                  default:
+                       return this._ppts;
+              }
+          }else{
+              return this[vPpt];
+          }
+      })
+  }
+
 }

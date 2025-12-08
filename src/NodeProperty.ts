@@ -1,5 +1,5 @@
 import {DbDataType, DbKeyType, DbSerialize} from "./DbAbstraction.js";
-import {NodeType} from "./NodeType.js";
+import {NodeTransform, NodeType} from "./NodeType.js";
 import {ValidationRule} from "./security/Validator.js";
 import {IncomingValue, SanitizedValue, UnsafeValue} from "./security/SanitizedValue.js";
 import {IStringIndex, Nullable} from "./core/IStringIndex.js";
@@ -612,4 +612,86 @@ export class NodeProperty {
   read( pNode:any):any {
     return pNode[this.getName()];
   }
+
+
+    /**
+     * To export NodeProperty definition
+     * @method
+     */
+    toJsonObject():any{
+        const o:any = {
+            name:this._name,
+            type:(this._type), // DbDataType|null = null;
+            size:this._size,
+            keyType:this._key, //DbKeyType|null = null;
+            composedKeyPart: this._k_p,
+            isIndex: this._idx,
+            notNull: this._nnull,
+            defaultValue: this._def,
+            serializeFormat: this._serialize, //DbSerialize|null = null;
+            nodeType: (this._n!=null ? this._n.getName() : null),
+            volatile: (this._v === true),
+            unique: (this._u === true),
+            isMultiple:(this._m === true),
+            isEmbedded:(this._e === true),
+            nodeRefPpt: (this._r!=null ? this._r : null),
+            foreignKeyName: (this._m_kn!=null ? this._m_kn : null),
+            source: (this._src!=null ? this._src : null),
+            validate:(this._val.map( r => r.toJsonObject())),
+            sleepHook:(this._s!=null),
+            wakeupHook: (this._wu!=null)
+        };
+
+
+        return o;
+    }
+
+    static toArrayHeader( pJoin:string[] = []):string[]{
+        return [
+            "_name",
+            "_type",
+            "_size",
+            "_key",
+            "_k_p",
+            "_idx",
+            "_nnull",
+            "_def",
+            "_serialize",
+            "_n",
+            "_v",
+            "_u",
+            "_m",
+            "_e",
+            "_r",
+            "_m_kn",
+            "_src",
+            "_val",
+            "_s",
+            "_wu"
+        ].concat(pJoin);
+    }
+
+    toArrayValue(pNames:string[] = [], pTransform:NodeTransform = NodeTransform.NONE):any[] {
+        return pNames.map((vPpt:string)=> {
+            switch (vPpt){
+                case "_val":
+                    if([NodeTransform.NONE,NodeTransform.ARRAY].indexOf(pTransform)>=-1){
+                        return this._val;
+                    }else if(pTransform==NodeTransform.JSON){
+                        return this._val.map( r => r.toJsonObject());
+                    }else{
+                        return null;
+                    }
+                case "_s":
+                case "_wu":
+                    if(pTransform==NodeTransform.NONE){
+                        return this[vPpt];
+                    }else {
+                        return null;
+                    }
+                default:
+                    return this[vPpt];
+            }
+        })
+    }
 }
