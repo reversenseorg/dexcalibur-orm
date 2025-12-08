@@ -682,6 +682,9 @@ export class NodeProperty {
                     }else{
                         return null;
                     }
+
+                case "_n":
+                    return (this._n!=null ? this._n.getType() : -1);
                 case "_s":
                 case "_wu":
                     if(pTransform==NodeTransform.NONE){
