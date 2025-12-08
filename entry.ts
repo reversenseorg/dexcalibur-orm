@@ -9,7 +9,7 @@ import { IJsonSerializable, SerializeOptions } from "./src/IJsonSerializable.js"
 import { INode, INodeMap, Node, TagUUID } from "./src/INode.js";
 import {ENodeInternalTypes, NodeInternalType, NodeInternalTypeMapping, NodeInternalTypeName } from "./src/NodeInternalType.js";
 import { NodeProperty, NodePropertyState } from "./src/NodeProperty.js";
-import {NodeInternalTypeMap, NodePropertyMap, NodeType, NodeTypeMap, NodeListenersMap } from "./src/NodeType.js";
+import {NodeInternalTypeMap, NodePropertyMap, NodeType, NodeTypeMap, NodeListenersMap, NodeTransform } from "./src/NodeType.js";
 import { WebConnectorFactory, WebConnectorFactoryOptions, WebConnectorOptions, WebConnectorOptionsMap } from "./src/WebConnectorFactory.js";
 import { OrmException } from "./src/error/OrmException.js";
 import { MonitoredError } from "./src/error/MonitoredError.js";
@@ -111,4 +111,5 @@ export {
     TagCategoryOptions,
     NodeInternalTypeName,
     ENodeInternalTypes,
+    NodeTransform
 };
