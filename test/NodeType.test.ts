@@ -57,13 +57,14 @@ describe('NodeType', function() {
                         })
                         .wakeUp( (x:NodePropertyState)=>{ return (x.p!=null ? JSON.parse(x.p) : null)})
                         .def(0)
-                ]);
+                ]).descr("Help to save a hook session");
 
 
             expect(node_t).to.be.instanceOf(NodeType);
             expect(node_t.getName()).to.equal("hook_session");
             expect(node_t.getType()).to.equal(CUSTOM_NODE_INTERNAL_TYPE);
             expect(node_t.getProperties().length).to.equal(9);
+            expect(node_t.getDescr()).to.equal("Help to save a hook session");
         });
 
         it('new node type without property', function () {
@@ -347,7 +348,8 @@ describe('NodeType', function() {
                     "_wrap",
                     "_dsa",
                     "_ds",
-                    "_cpk"
+                    "_cpk",
+                    "_dscr"
                 ]);
             });
 
@@ -362,6 +364,7 @@ describe('NodeType', function() {
                     "_dsa",
                     "_ds",
                     "_cpk",
+                    "_dscr",
                     "aaa"
                 ]);
             });
@@ -376,7 +379,8 @@ describe('NodeType', function() {
                     "_wrap",
                     "_dsa",
                     "_ds",
-                    "_cpk"
+                    "_cpk",
+                    "_dscr"
                 ]);
             });
     });

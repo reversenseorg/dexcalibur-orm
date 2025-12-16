@@ -136,6 +136,8 @@ export class NodeType {
   _post:Nullable<RebuildHook> = null;
 
 
+  _dscr:string|null = null;
+
   /**
    * Creates an instance of the class with the specified name, internal type, and node properties.
    * Also initializes and updates the properties for the instance.
@@ -281,6 +283,18 @@ export class NodeType {
       throw new ConnectorException("Injection of composite foreign keys are not supported : node=" + this.getName());
     }
   }
+
+
+    /**
+     * Sets the description property with the provided text and returns the current instance.
+     *
+     * @param {string} pText - The text to set as the description of the purpose of this NodeType
+     * @return {NodeType} The current instance with the updated description.
+     */
+    descr(pText:string):NodeType{
+        this._dscr = pText;
+        return this;
+    }
 
 
   /**
@@ -512,6 +526,10 @@ export class NodeType {
     return this._src;
   }
 
+  getDescr():string|null{
+    return this._dscr;
+  }
+
   subscribe( pOpeName:string, pCallback:any):NodeType {
     this._ev[pOpeName] = pCallback;
     return this;
@@ -579,7 +597,8 @@ export class NodeType {
         _wrap: this._wrap,
         _dsa: this._dsa,
         _ds: this._ds,
-        _cpk: this._cpk
+        _cpk: this._cpk,
+        _dscr: this._dscr
     };
 
       for(let k in this._ppts) {
@@ -598,7 +617,8 @@ export class NodeType {
         "_wrap",
         "_dsa",
         "_ds",
-        "_cpk"
+        "_cpk",
+        "_dscr"
     ].concat(pJoin);
   }
 

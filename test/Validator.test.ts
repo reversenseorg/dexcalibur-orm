@@ -119,4 +119,142 @@ describe("ValidationRule", () => {
         });
     });
 
+    describe('Validator.structure', function() {
+
+        enum ProjectInputPurpose{
+            MAIN="main",
+            EXTRA="extra"
+        }
+
+        const rule = (ValidationRule.structure({
+            uploadID: ValidationRule.newRegexpAssert(
+                /^[0-9a-z]{16,17}$/
+            ),
+            purpose: ValidationRule.newPinklistAssert([
+                ProjectInputPurpose.MAIN,
+                ProjectInputPurpose.EXTRA
+            ])
+        }));
+
+        const rule2 = (ValidationRule.structure({
+            uploadID: ValidationRule.newRegexpAssert(
+                /^[0-9a-z]{16,17}$/
+            ),
+            extra: ValidationRule.structure({
+                purpose: ValidationRule.newPinklistAssert([
+                    ProjectInputPurpose.MAIN,
+                    ProjectInputPurpose.EXTRA
+                ])
+            })
+        }));
+
+        console.log((rule as any)._o.z);
+        console.log((rule2 as any)._o.z);
+
+        const valid = {
+            uploadID: 'ufy7k7kig3yfl0gbm',
+            purpose: 'main'
+        };
+
+        it('with valid input', function () {
+            expect(rule.test(valid)).to.be.true;
+        });
+
+        it('NULL input', function () {
+            expect(rule.test(null)).to.be.false;
+        });
+
+        it('UNDEFINED input', function () {
+            expect(rule.test(undefined)).to.be.false;
+        });
+
+        it('Object input', function () {
+            expect(rule.test({})).to.be.false;
+        });
+
+        it('Array input', function () {
+            expect(rule.test([])).to.be.false;
+        });
+
+        it('Function input', function () {
+            expect(rule.test(()=>{})).to.be.false;
+        });
+
+        it('number input', function () {
+            expect(rule.test(10)).to.be.false;
+        });
+
+        it('Infinity input', function () {
+            expect(rule.test(Infinity)).to.be.false;
+        });
+
+        it('NaN input', function () {
+            expect(rule.test(NaN)).to.be.false;
+        });
+    });
+
+    describe('Validator.asArrayOf', function() {
+
+        enum ProjectInputPurpose{
+            MAIN="main",
+            EXTRA="extra"
+        }
+
+        const rule = ValidationRule.asArrayOf([
+            ValidationRule.structure({
+                uploadID: ValidationRule.newRegexpAssert(
+                    /^[0-9a-z]{16,17}$/
+                ),
+                purpose: ValidationRule.newPinklistAssert([
+                    ProjectInputPurpose.MAIN,
+                    ProjectInputPurpose.EXTRA
+                ])
+            })
+        ]);
+
+        const valid = [{
+            uploadID: 'ufy7k7kig3yfl0gbm',
+            purpose: 'main'
+        },{
+            uploadID: 'jejeofepfjahajkaj',
+            purpose: 'extra'
+        }];
+
+        it('with valid input', function () {
+            expect(rule.test(valid)).to.be.true;
+        });
+
+        it('Empty Array', function () {
+            expect(rule.test([])).to.be.true;
+        });
+
+        it('NULL input', function () {
+            expect(rule.test(null)).to.be.false;
+        });
+
+        it('UNDEFINED input', function () {
+            expect(rule.test(undefined)).to.be.false;
+        });
+
+        it('Object input', function () {
+            expect(rule.test({})).to.be.false;
+        });
+
+
+        it('Function input', function () {
+            expect(rule.test(()=>{})).to.be.false;
+        });
+
+        it('number input', function () {
+            expect(rule.test(10)).to.be.false;
+        });
+
+        it('Infinity input', function () {
+            expect(rule.test(Infinity)).to.be.false;
+        });
+
+        it('NaN input', function () {
+            expect(rule.test(NaN)).to.be.false;
+        });
+    });
 });

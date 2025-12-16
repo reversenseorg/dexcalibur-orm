@@ -13,6 +13,8 @@ export enum ValidationType {
     CUSTOM
 }
 
+// Another fron Zod : /^(?!\.)(?!.*\.\.)([a-z0-9_'+\-\.]*)[a-z0-9_+-]@([a-z0-9][a-z0-9\-]*\.)+[a-z]{2,}$/i
+// see alo : https://colinhacks.com/essays/reasonable-email-regex
 // Same than AngularJs project
 const EMAIL_REGEXP =
     /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
@@ -102,14 +104,14 @@ export class ValidationRule {
      * @since 1.0.0
      */
     static newPinklistAssert(pRefValue:any):ValidationRule {
-        return new ValidationRule( ValidationType.PINKLIST, pRefValue);
+        return (new ValidationRule( ValidationType.PINKLIST, pRefValue)).z({ type: 'enum', of:pRefValue });
     }
 
     /**
      * @since 1.0.0
      */
     static newRegexpAssert(pRefValue:RegExp):ValidationRule {
-        return new ValidationRule( ValidationType.REGEXP, pRefValue);
+        return (new ValidationRule( ValidationType.REGEXP, pRefValue)).z({ type: 'string', regex:pRefValue.source });
     }
 
     /**
@@ -123,9 +125,9 @@ export class ValidationRule {
      * @since 1.0.34
      */
     static bool():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return (vValue===true)||(vValue===false);
-        });
+        })).z({ type: 'boolean' });
     }
 
 
@@ -133,36 +135,36 @@ export class ValidationRule {
      * @since 1.0.34
      */
     static utf8String():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return NodeBuffer.isUtf8(Buffer.from(vValue));
-        });
+        })).z({ type: 'string' });
     }
 
     /**
      * @since 1.0.34
      */
     static utf8StringList():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return ValidationRule.asArrayOf([ ValidationRule.utf8String() ]).test(vValue);
-        });
+        })).z({ type: 'array', of:'string' });
     }
 
     /**
      * @since 1.0.34
      */
     static uintString():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return /^([0-9]+)$/.test(vValue);
-        });
+        })).z({ type: 'string', regex:'^[0-9]+$' });
     }
 
     /**
      * @since 1.0.34
      */
     static uintStringComposite(pSeparator:string):ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return ValidationRule.asArrayOf([ ValidationRule.uintString() ]).test(vValue.split(pSeparator));
-        });
+        })).z({ type: 'array', of:'number' });
     }
 
 
@@ -174,7 +176,7 @@ export class ValidationRule {
      * @sinec 1.1.3
      */
     static os():ValidationRule {
-        return new ValidationRule( ValidationType.PINKLIST, [
+        const range = [
             OperatingSystem.LINUX,
             OperatingSystem.ANDROID,
             OperatingSystem.TOYBOX,
@@ -186,43 +188,44 @@ export class ValidationRule {
             OperatingSystem.FIRE_OS,
             OperatingSystem.WINNT,
             OperatingSystem.NONE,
-        ]);
+        ];
+        return (new ValidationRule( ValidationType.PINKLIST, range)).z({ type: 'enum', of:range });
     }
 
     /**
      * @since 1.0.34
      */
-    static uuid():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+    static uuid(pVersion:{version:"v1"|"v2"|"v3"|"v4"|"v5"|"v6"|"v7"|"v8"}|null = null):ValidationRule {
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(vValue);
-        });
+        })).z({ type: 'uuid', of:pVersion });
     }
 
     /**
      * @since 1.0.34
      */
     static prefixedUuid(pPrefix:string):ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return new RegExp("^"+pPrefix+"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$").test(vValue);
-        });
+        })).z({ type: 'string', regex:"^"+pPrefix+"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" });
     }
 
     /**
      * @since 1.0.34
      */
     static uuidComposite(pSeparator:string):ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return ValidationRule.asArrayOf([ ValidationRule.uuid() ]).test(vValue.split(pSeparator));
-        });
+        })).z({ type: 'string', composite:{ type:'uuid', sep: pSeparator }});
     }
 
     /**
      * @since 1.0.34
      */
     static base64String():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(vValue);
-        });
+        })).z({ type: 'base64' });
     }
 
 
@@ -230,18 +233,18 @@ export class ValidationRule {
      * @since 1.0.34
      */
     static hexColor():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return /^[0-9A-Fa-f]{6}$/.test(vValue);
-        });
+        })).z({ type: 'hex', length:6 });
     }
 
     /**
      * @since 1.0.34
      */
     static email():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return EMAIL_REGEXP.test(vValue);
-        });
+        })).z({ type: 'email' });
     }
 
 
@@ -249,16 +252,16 @@ export class ValidationRule {
      * @since 1.0.34
      */
     static uuidList():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return ValidationRule.asArrayOf([ ValidationRule.uuid() ]).test(vValue);
-        });
+        })).z({ type: 'array', of:'uuid' });
     }
 
     /**
      * @since 1.0.34
      */
     static nullableObj():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             if(vValue===null || vValue===undefined){
                 return true;
             }
@@ -266,16 +269,16 @@ export class ValidationRule {
                 return true;
             }
             return false;
-        });
+        })).z({ type: 'nullable', of:'any' });
     }
 
     /**
      * @since 1.1.1
      */
     static uint64():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return (typeof vValue==='number') && (vValue < Number.MAX_SAFE_INTEGER) && (vValue > Number.MIN_SAFE_INTEGER);
-        });
+        })).z({ type: 'int'  });
     }
 
     /**
@@ -284,9 +287,9 @@ export class ValidationRule {
      * @since 1.1.3
      */
     static number(pMin:number, pMax:number):ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return (typeof vValue==='number' &&  vValue>=pMin && vValue<=pMax);
-        });
+        })).z({ type: 'number', gte: pMin, lte: pMax});
     }
 
     /**
@@ -294,25 +297,47 @@ export class ValidationRule {
      * @since 1.1.1
      */
     static nodeTypeID(pNullable = false, pValid:NodeInternalType[] = []):ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return (pNullable? (vValue==null) : (vValue!=null) && (typeof vValue==='number') && (pValid.indexOf(vValue)>-1));
-        });
+        })).z({ type:'nullable', of:{ type: 'enum', of:pValid }});
     }
 
     /**
      * @since 1.0.34
      */
     static emailList():ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
             return ValidationRule.asArrayOf([ ValidationRule.email() ]).test(vValue);
-        });
+        })).z({ type: 'array', of:'email' });
     }
 
     /**
      * @since 1.0.34
      */
     static structure(pDefinition:StructureValidatorTree):ValidationRule {
-        return new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
+
+        let fmt:any = {};
+        function serZFmt(pZodRule:any):any{
+            if(ValidationRule.isRule(pZodRule)){
+                return pZodRule._o.z;
+            }
+
+            if(Array.isArray(pZodRule)){
+                return { type:'array', of:(pZodRule as any[]).map( (pRule:any)=>{
+                    return serZFmt(pRule)
+                }) };
+            }
+
+            let o:any = {};
+            for(let k in pZodRule){
+                o[k] = serZFmt(pZodRule[k]);
+            }
+            return o;
+        }
+
+        fmt = serZFmt(pDefinition);
+
+        return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
 
             function isObj(v):boolean{
                 //console.log(v,"isObj > ",(v==null) || (typeof v != 'object'));
@@ -340,7 +365,7 @@ export class ValidationRule {
             if(!isObj(vValue)) return false;
 
             return validate(vValue, pDefinition);
-        });
+        })).z({ type: 'object', of:fmt });
     }
 
     test(pData:any):boolean {
@@ -359,10 +384,23 @@ export class ValidationRule {
     }
 
     toJsonObject():any {
-        return {
+        const o:any = {
             type:this.type,
             ref:(typeof this.refValue != 'function' ? this.refValue : null)
-        }
+        };
+
+        if(this._o.z!=null) o.z = this._o.z;
+
+        return o;
+    }
+
+    z(pZodRule:any):ValidationRule {
+        this._o.z = pZodRule;
+        return this;
+    }
+
+    hasZodRule():boolean {
+        return (this._o.z!=null);
     }
 }
 
@@ -509,4 +547,6 @@ export class Validator {
     getErrors():ValidationError[] {
         return this._err;
     }
+
+
 }

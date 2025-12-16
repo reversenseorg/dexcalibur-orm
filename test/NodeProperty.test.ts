@@ -598,7 +598,8 @@ describe('NodeProperty', function() {
                 "_src",
                 "_val",
                 "_s",
-                "_wu"
+                "_wu",
+                "_dscr"
             ]);
         });
 
@@ -626,6 +627,7 @@ describe('NodeProperty', function() {
                 "_val",
                 "_s",
                 "_wu",
+                "_dscr",
                 "custom1",
                 "custom2"
             ]);
@@ -664,6 +666,7 @@ describe('NodeProperty', function() {
                 .notnull()
                 .def(100)
                 .unique()
+                .descr("Any text")
                 .volatile();
 
             const header = NodeProperty.toArrayHeader();
@@ -678,6 +681,7 @@ describe('NodeProperty', function() {
             expect(values[header.indexOf("_def")]).to.equal(100);
             expect(values[header.indexOf("_v")]).to.equal(true);
             expect(values[header.indexOf("_u")]).to.equal(true);
+            expect(values[header.indexOf("_dscr")]).to.equal("Any text");
         });
 
         it('should export validation rules with NONE transform', function () {

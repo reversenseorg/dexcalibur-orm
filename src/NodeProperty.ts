@@ -56,6 +56,13 @@ export class NodeProperty {
   // wakeup
   _wu:any = null;
 
+  /**
+  * Description of the property for AI
+  * @field
+  * @type {string|null}
+  */
+  _dscr:string|null = null;
+
 
 
   /**
@@ -594,6 +601,18 @@ export class NodeProperty {
     return this;
   }
 
+
+  /**
+   * Sets the description property with the provided text and returns the current instance.
+   *
+   * @param {string} pText - The text to set as the description of the purpose of this NodeProperty
+   * @return {NodeProperty} The current instance with the updated description.
+   */
+  descr(pText:string):NodeProperty{
+      this._dscr = pText;
+      return this;
+  }
+
   /**
    * To check is the property must be embedded
    *
@@ -603,6 +622,7 @@ export class NodeProperty {
   isEmbedded():boolean {
     return this._e;
   }
+
 
   /**
    * To read value of this property from a specifid object
@@ -639,7 +659,8 @@ export class NodeProperty {
             source: (this._src!=null ? this._src : null),
             validate:(this._val.map( r => r.toJsonObject())),
             sleepHook:(this._s!=null),
-            wakeupHook: (this._wu!=null)
+            wakeupHook: (this._wu!=null),
+            description: (this._dscr!=null?this._dscr:"")
         };
 
 
@@ -667,7 +688,8 @@ export class NodeProperty {
             "_src",
             "_val",
             "_s",
-            "_wu"
+            "_wu",
+            "_dscr"
         ].concat(pJoin);
     }
 
