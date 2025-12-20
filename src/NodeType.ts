@@ -14,6 +14,7 @@ import {OrmException} from "./error/OrmException.js";
 import {DataSourceHelper} from "./DataSourceHelper.js";
 import {INode} from "./INode.js";
 import {Nullable} from "./core/IStringIndex.js";
+import {IJSONSchema, IJSONSchemaDocument, JsonSchemaOpts} from "./utils/JSONSchema";
 
 export enum NodeTransform {
     NONE = 0,
@@ -666,4 +667,53 @@ export class NodeType {
       })
   }
 
+    /**
+     * To get the JSON Schema Document from the node type
+     * @param {JsonSchemaOpts} pOptions
+     * @return {IJSONSchemaDocument}
+     * @method
+     */
+    toJSONSchemaDoc(pOptions:JsonSchemaOpts = {}):IJSONSchemaDocument {
+
+        const ppts:Record<string, IJSONSchema> = {};
+
+        this.getProperties().map( (vPpt:NodeProperty) => {
+            ppts[vPpt.getName()] = vPpt.toJSONSchemaPart();
+        })
+
+        const scd:IJSONSchemaDocument = {
+            $schema: 'https://json-schema.org/draft/2020-12/schema',
+            title: this.getName(),
+            type: 'object',
+            properties: ppts,
+            required: (pOptions?.required ?? [])
+        };
+
+        if(pOptions.id){
+            scd.$id = pOptions.id;
+        }
+
+        return scd;
+    }
+
+    /**
+     * To get the JSON Schema part of the node type
+     * @param {boolean} pIsArray
+     * @param {JsonSchemaOpts} pOptions
+     * @return {IJSONSchema}
+     * @method
+     */
+    toJSONSchemaPart(pIsArray = false, pOptions:JsonSchemaOpts = {}):IJSONSchema {
+        const sc:IJSONSchema = {
+            type: "object",
+            properties: {},
+            required: (pOptions?.required ?? [])
+        }
+
+        this.getProperties().map( (vPpt:NodeProperty) => {
+            sc.properties[vPpt.getName()] = vPpt.toJSONSchemaPart();
+        })
+
+        return (pIsArray? {type:"array",items: sc}:sc);
+    }
 }

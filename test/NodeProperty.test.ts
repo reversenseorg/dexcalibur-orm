@@ -257,27 +257,28 @@ describe('NodeProperty', function() {
 
             raw: any = null;
 
-            node:INode[] = [];
+            node: INode[] = [];
 
-            tags:number[] = [];
+            tags: number[] = [];
 
             /**
              * Save flag. FALSE = not saved
              */
             _s = false;
 
-            constructor( pConfig:any) {
+            constructor(pConfig: any) {
 
-                for(const i in this){
+                for (const i in this) {
                     this[i] = pConfig[i];
                 }
             }
         }
+
         /**
          * @class
          */
         class HookSession {
-            static TYPE:NodeType = new NodeType( "hook_session", 11,
+            static TYPE: NodeType = new NodeType("hook_session", 11,
                 [
                     (new NodeProperty("_uid")).type(DbDataType.STRING).key(DbKeyType.PRIMARY),
                     (new NodeProperty("message")).multiple(HookMessage.TYPE).def("[]"),
@@ -286,8 +287,8 @@ describe('NodeProperty', function() {
                     (new NodeProperty("time")).type(DbDataType.NUMERIC).def(-1),
                     (new NodeProperty("frida"))
                         .type(DbDataType.STRING)
-                        .sleep( (x:NodePropertyState)=>{
-                            if(x.p==null) return {};
+                        .sleep((x: NodePropertyState) => {
+                            if (x.p == null) return {};
 
                             return JSON.stringify({
                                 pid: x.p.pid,
@@ -296,8 +297,8 @@ describe('NodeProperty', function() {
                                 script: null
                             });
                         })
-                        .wakeUp( (x:NodePropertyState)=>{
-                            return (x.p!=null ? JSON.parse(x.p) : null);
+                        .wakeUp((x: NodePropertyState) => {
+                            return (x.p != null ? JSON.parse(x.p) : null);
                         })
                         .def(0),
                     (new NodeProperty("active")).type(DbDataType.BOOLEAN).def(false),
@@ -305,22 +306,24 @@ describe('NodeProperty', function() {
                     (new NodeProperty("offset")).type(DbDataType.NUMERIC).def(0),
                     (new NodeProperty("evTags"))
                         .type(DbDataType.STRING)
-                        .sleep( (x:NodePropertyState)=>{
+                        .sleep((x: NodePropertyState) => {
                             //const t = Object.keys(x.p);
                             return JSON.stringify(Object.keys(x.p));
                         })
-                        .wakeUp( (x:NodePropertyState)=>{ return (x.p!=null ? JSON.parse(x.p) : null)})
+                        .wakeUp((x: NodePropertyState) => {
+                            return (x.p != null ? JSON.parse(x.p) : null)
+                        })
                         .def(0)
                 ]);
-            __:NodeInternalType = 11;
+            __: NodeInternalType = 11;
 
-            public _uid:string = null;
+            public _uid: string = null;
 
             /**
              * The stack containing the received message
              * @field
              */
-            message:HookMessage[] = [];
+            message: HookMessage[] = [];
             //message:HookMessageV2[] = [];
 
             /**
@@ -328,32 +331,32 @@ describe('NodeProperty', function() {
              * (TODO : 1 hookManager per device)
              * @field
              */
-            hookManager:any = null;
+            hookManager: any = null;
 
             /**
              * Follow hookset matches
              * @field
              */
-            sets_matches:any = {};
+            sets_matches: any = {};
 
             /**
              * The timestamp of the session
              * @field
              */
-            time:number = -1;
+            time: number = -1;
 
             /**
              * To hold some references from frida-node
              * @field
              */
-            frida:any = null
+            frida: any = null
 
 
             active = true;
 
-            opts:any;
+            opts: any;
 
-            evTags:any = {};
+            evTags: any = {};
 
             tags = [];
 
@@ -368,9 +371,9 @@ describe('NodeProperty', function() {
 
                 // not enough unique for collaborative mode
                 // should be bound to the device also
-                const now =  (new Date()).getTime();
+                const now = (new Date()).getTime();
 
-                this._uid = now+"";
+                this._uid = now + "";
 
                 // hook
                 this.message = [];
@@ -390,14 +393,12 @@ describe('NodeProperty', function() {
         }
 
 
-
-
         it('sleep', function () {
             let sess = new HookSession({});
             sess.frida.pid = 123;
-            sess.message.push(new HookMessage({ id:"msg1", type: "runtime", tags:[1,2,3] }));
-            sess.message.push(new HookMessage({ id:"msg2", type: "runtime", tags:[] }));
-            sess.message.push(new HookMessage({ id:"msg3", type: "runtime", tags:[2] }));
+            sess.message.push(new HookMessage({id: "msg1", type: "runtime", tags: [1, 2, 3]}));
+            sess.message.push(new HookMessage({id: "msg2", type: "runtime", tags: []}));
+            sess.message.push(new HookMessage({id: "msg3", type: "runtime", tags: [2]}));
 
 
             expect(HookSession.TYPE.getProperty("message").hasSleep()).to.be.false;
@@ -701,29 +702,6 @@ describe('NodeProperty', function() {
             expect(values[1][0]).to.equal(rule1);
         });
 
-        /*it('should export validation rules with JSON transform', function () {
-            const rule1 = {
-                test: (val: any) => val.length > 0,
-                toJsonObject: () => ({ type: "length", min: 1 })
-            };
-            const rule2 = {
-                test: (val: any) => val.length < 100,
-                toJsonObject: () => ({ type: "length", max: 100 })
-            };
-
-            const ppt = new NodeProperty("validatedProp")
-                .type(DbDataType.STRING)
-                .addValidationRule(rule1 as any)
-                .addValidationRule(rule2 as any);
-
-            const values = ppt.toArrayValue(["_name", "_val"], NodeTransform.JSON);
-
-            expect(values[0]).to.equal("validatedProp");
-            expect(values[1]).to.be.an('array').with.lengthOf(2);
-            expect(values[1][0].type).to.equal("length");
-            expect(values[1][0].min).to.equal(1);
-            expect(values[1][1].max).to.equal(100);
-        });*/
 
         it('should export validation rules with ARRAY transform', function () {
             const rule1 = {
@@ -836,6 +814,460 @@ describe('NodeProperty', function() {
 
             expect(values[0]).to.equal("serializedProp");
             expect(values[1]).to.equal(DbSerialize.JSON);
+        });
+    });
+
+
+
+    describe('schema()', function () {
+        it('should set a JSON schema and return NodeProperty for chaining', function () {
+            const ppt = new NodeProperty("email");
+            const schema = {
+                type: 'string' as const,
+                format: 'email',
+                maxLength: 255
+            };
+
+            const result = ppt.schema(schema);
+
+            expect(result).to.be.instanceOf(NodeProperty);
+            expect(ppt._sc).to.deep.equal(schema);
+        });
+
+        it('should allow setting complex object schema', function () {
+            const ppt = new NodeProperty("address");
+            const schema = {
+                type: 'object' as const,
+                properties: {
+                    street: {type: 'string' as const},
+                    city: {type: 'string' as const},
+                    zipCode: {type: 'string' as const, pattern: '^[0-9]{5}$'}
+                },
+                required: ['street', 'city']
+            };
+
+            ppt.schema(schema);
+
+            expect(ppt._sc).to.deep.equal(schema);
+            expect(ppt._sc.type).to.equal('object');
+            expect(ppt._sc.properties).to.have.property('street');
+        });
+
+        it('should allow setting array schema', function () {
+            const ppt = new NodeProperty("tags");
+            const schema = {
+                type: 'array' as const,
+                items: {type: 'string' as const},
+                uniqueItems: true,
+                minItems: 1
+            };
+
+            ppt.schema(schema);
+
+            expect(ppt._sc.type).to.equal('array');
+            expect(ppt._sc.items).to.deep.equal({type: 'string'});
+            expect(ppt._sc.uniqueItems).to.be.true;
+        });
+
+        it('should handle enum schema', function () {
+            const ppt = new NodeProperty("status");
+            const schema = {
+                type: 'string' as const,
+                enum: ['pending', 'approved', 'rejected']
+            };
+
+            ppt.schema(schema);
+
+            expect(ppt._sc.enum).to.deep.equal(['pending', 'approved', 'rejected']);
+        });
+
+        it('should be chainable with other NodeProperty methods', function () {
+            const ppt = new NodeProperty("email")
+                .type(DbDataType.STRING)
+                .notnull()
+                .schema({
+                    type: 'string' as const,
+                    format: 'email'
+                })
+                .unique();
+
+            expect(ppt).to.be.instanceOf(NodeProperty);
+            expect(ppt.isNotNull()).to.be.true;
+            expect(ppt.isUnique()).to.be.true;
+            expect(ppt._sc.format).to.equal('email');
+        });
+    });
+
+    describe('schemaDoc()', function () {
+        it('should set a JSON schema document and return NodeProperty for chaining', function () {
+            const ppt = new NodeProperty("user");
+            const schemaDoc = {
+                $schema: 'https://json-schema.org/draft/2020-12/schema',
+                $id: 'https://example.com/user.schema.json',
+                title: 'User',
+                type: 'object' as const,
+                properties: {
+                    id: {type: 'integer' as const},
+                    name: {type: 'string' as const}
+                }
+            };
+
+            const result = ppt.schemaDoc(schemaDoc);
+
+            expect(result).to.be.instanceOf(NodeProperty);
+            expect(ppt._scd).to.deep.equal(schemaDoc);
+        });
+
+        it('should set schema document with $defs', function () {
+            const ppt = new NodeProperty("config");
+            const schemaDoc = {
+                $schema: 'https://json-schema.org/draft/2020-12/schema',
+                type: 'object' as const,
+                $defs: {
+                    address: {
+                        type: 'object' as const,
+                        properties: {
+                            street: {type: 'string' as const}
+                        }
+                    }
+                },
+                properties: {
+                    home: {$ref: '#/$defs/address'}
+                }
+            };
+
+            ppt.schemaDoc(schemaDoc);
+
+            expect(ppt._scd.$defs).to.exist;
+            expect(ppt._scd.$defs.address).to.exist;
+        });
+
+        it('should be chainable', function () {
+            const ppt = new NodeProperty("data")
+                .type(DbDataType.BLOB)
+                .schemaDoc({
+                    $schema: 'https://json-schema.org/draft/2020-12/schema',
+                    type: 'object' as const
+                })
+                .def({});
+
+            expect(ppt).to.be.instanceOf(NodeProperty);
+            expect(ppt.getDefaultValue()).to.deep.equal({});
+        });
+    });
+
+    describe('toJSONSchemaDoc()', function () {
+        it('should return null when no schema document is set', function () {
+            const ppt = new NodeProperty("test");
+
+            const result = ppt.toJSONSchemaDoc();
+
+            expect(result).to.be.null;
+        });
+
+        it('should return the schema document when set', function () {
+            const ppt = new NodeProperty("user");
+            const schemaDoc = {
+                $schema: 'https://json-schema.org/draft/2020-12/schema',
+                $id: 'https://example.com/user.schema.json',
+                title: 'User',
+                type: 'object' as const,
+                properties: {
+                    id: {type: 'integer' as const}
+                }
+            };
+
+            ppt.schemaDoc(schemaDoc);
+            const result = ppt.toJSONSchemaDoc();
+
+            expect(result).to.deep.equal(schemaDoc);
+            expect(result.$schema).to.equal('https://json-schema.org/draft/2020-12/schema');
+            expect(result.$id).to.equal('https://example.com/user.schema.json');
+        });
+
+        it('should return exact schema document that was set', function () {
+            const ppt = new NodeProperty("product");
+            const schemaDoc = {
+                $schema: 'https://json-schema.org/draft/2020-12/schema',
+                title: 'Product',
+                type: 'object' as const,
+                properties: {
+                    name: {type: 'string' as const},
+                    price: {type: 'number' as const, minimum: 0}
+                },
+                required: ['name', 'price']
+            };
+
+            ppt.schemaDoc(schemaDoc);
+
+            expect(ppt.toJSONSchemaDoc()).to.deep.equal(schemaDoc);
+        });
+    });
+    describe('toJSONSchemaPart()', function () {
+        it('should return null when no schema is set', function () {
+            const ppt = new NodeProperty("test");
+
+            const result = ppt.toJSONSchemaPart();
+
+            expect(result).to.be.null;
+        });
+
+        it('should return the schema when set and pIsArray is false', function () {
+            const ppt = new NodeProperty("email");
+            const schema = {
+                type: 'string' as const,
+                format: 'email',
+                maxLength: 255
+            };
+
+            ppt.schema(schema);
+            const result = ppt.toJSONSchemaPart(false);
+
+            expect(result).to.deep.equal(schema);
+            expect(result.type).to.equal('string');
+        });
+
+        it('should wrap schema in array type when pIsArray is true', function () {
+            const ppt = new NodeProperty("email");
+            const schema = {
+                type: 'string' as const,
+                format: 'email'
+            };
+
+            ppt.schema(schema);
+            const result = ppt.toJSONSchemaPart(true);
+
+            expect(result.type).to.equal('array');
+            expect(result.items).to.deep.equal(schema);
+        });
+
+        it('should wrap object schema in array when pIsArray is true', function () {
+            const ppt = new NodeProperty("users");
+            const schema = {
+                type: 'object' as const,
+                properties: {
+                    id: {type: 'integer' as const},
+                    name: {type: 'string' as const}
+                }
+            };
+
+            ppt.schema(schema);
+            const result = ppt.toJSONSchemaPart(true);
+
+            expect(result.type).to.equal('array');
+            expect(result.items).to.deep.equal(schema);
+            expect(result.items.type).to.equal('object');
+        });
+
+        it('should handle complex nested schema', function () {
+            const ppt = new NodeProperty("address");
+            const schema = {
+                type: 'object' as const,
+                properties: {
+                    street: {type: 'string' as const},
+                    coordinates: {
+                        type: 'object' as const,
+                        properties: {
+                            lat: {type: 'number' as const},
+                            lng: {type: 'number' as const}
+                        }
+                    }
+                }
+            };
+
+            ppt.schema(schema);
+            const result = ppt.toJSONSchemaPart(false);
+
+            expect(result).to.deep.equal(schema);
+            expect(result.properties.coordinates.properties).to.exist;
+        });
+
+        it('should default to pIsArray=false when not specified', function () {
+            const ppt = new NodeProperty("status");
+            const schema = {
+                type: 'string' as const,
+                enum: ['active', 'inactive']
+            };
+
+            ppt.schema(schema);
+            const result = ppt.toJSONSchemaPart();
+
+            expect(result).to.deep.equal(schema);
+            expect(result.type).to.equal('string');
+        });
+
+        it('should handle schema with validation keywords', function () {
+            const ppt = new NodeProperty("age");
+            const schema = {
+                type: 'integer' as const,
+                minimum: 0,
+                maximum: 150,
+                description: 'Person age in years'
+            };
+
+            ppt.schema(schema);
+            const result = ppt.toJSONSchemaPart();
+
+            expect(result.minimum).to.equal(0);
+            expect(result.maximum).to.equal(150);
+            expect(result.description).to.equal('Person age in years');
+        });
+
+        it('should handle schema with oneOf', function () {
+            const ppt = new NodeProperty("value");
+            const schema = {
+                oneOf: [
+                    {type: 'string' as const},
+                    {type: 'number' as const}
+                ]
+            };
+
+            ppt.schema(schema);
+            const result = ppt.toJSONSchemaPart();
+
+            expect(result.oneOf).to.be.an('array').with.lengthOf(2);
+            expect(result.oneOf[0].type).to.equal('string');
+            expect(result.oneOf[1].type).to.equal('number');
+        });
+
+        it('should handle schema with $ref', function () {
+            const ppt = new NodeProperty("reference");
+            const schema = {
+                $ref: '#/$defs/commonType'
+            };
+
+            ppt.schema(schema);
+            const result = ppt.toJSONSchemaPart();
+
+            expect(result.$ref).to.equal('#/$defs/commonType');
+        });
+
+        it('should handle array schema wrapped in array', function () {
+            const ppt = new NodeProperty("matrix");
+            const schema = {
+                type: 'array' as const,
+                items: {type: 'number' as const}
+            };
+
+            ppt.schema(schema);
+            const result = ppt.toJSONSchemaPart(true);
+
+            expect(result.type).to.equal('array');
+            expect(result.items).to.deep.equal(schema);
+            expect(result.items.type).to.equal('array');
+        });
+
+        it('should preserve all schema properties when wrapping in array', function () {
+            const ppt = new NodeProperty("product");
+            const schema = {
+                type: 'object' as const,
+                title: 'Product',
+                description: 'A product item',
+                properties: {
+                    sku: {type: 'string' as const},
+                    price: {type: 'number' as const}
+                },
+                required: ['sku']
+            };
+
+            ppt.schema(schema);
+            const result = ppt.toJSONSchemaPart(true);
+
+            expect(result.type).to.equal('array');
+            expect(result.items).to.deep.equal(schema);
+            expect(result.items.title).to.equal('Product');
+            expect(result.items.required).to.deep.equal(['sku']);
+        });
+    });
+
+    describe('integration: schema with other NodeProperty features', function () {
+        it('should combine schema with data type', function () {
+            const ppt = new NodeProperty("email")
+                .type(DbDataType.STRING)
+                .schema({
+                    type: 'string' as const,
+                    format: 'email'
+                });
+
+            expect(ppt.getType()).to.equal(DbDataType.STRING);
+            expect(ppt._sc.format).to.equal('email');
+        });
+
+        it('should combine schema with validation rules', function () {
+            const rule = {
+                test: (val: any) => val.length > 0,
+                toJsonObject: () => ({type: "length", min: 1})
+            };
+
+            const ppt = new NodeProperty("username")
+                .type(DbDataType.STRING)
+                .addValidationRule(rule as any)
+                .schema({
+                    type: 'string' as const,
+                    minLength: 3,
+                    maxLength: 20
+                });
+
+            expect(ppt.isSanitizable()).to.be.true;
+            expect(ppt._sc.minLength).to.equal(3);
+        });
+
+        it('should combine schema with default value', function () {
+            const ppt = new NodeProperty("status")
+                .def('pending')
+                .schema({
+                    type: 'string' as const,
+                    enum: ['pending', 'approved', 'rejected']
+                });
+
+            expect(ppt.getDefaultValue()).to.equal('pending');
+            expect(ppt._sc.enum).to.include('pending');
+        });
+
+        it('should work with node type references', function () {
+            const refType = new NodeType("referenced", 99, [
+                (new NodeProperty("_uid")).type(DbDataType.STRING).key(DbKeyType.PRIMARY)
+            ]);
+
+            const ppt = new NodeProperty("reference")
+                .single(refType)
+                .schema({
+                    type: 'object' as const,
+                    properties: {
+                        _uid: {type: 'string' as const}
+                    }
+                });
+
+            expect(ppt.isNode()).to.be.true;
+            expect(ppt._sc.type).to.equal('object');
+        });
+
+        it('should support schema with serialization', function () {
+            const ppt = new NodeProperty("config")
+                .type(DbDataType.BLOB)
+                .serialize(DbSerialize.JSON)
+                .schema({
+                    type: 'object' as const,
+                    additionalProperties: true
+                });
+
+            expect(ppt.isSerialized()).to.be.true;
+            expect(ppt._sc.additionalProperties).to.be.true;
+        });
+
+        it('should handle schema with unique constraint', function () {
+            const ppt = new NodeProperty("email")
+                .type(DbDataType.STRING)
+                .unique()
+                .notnull()
+                .schema({
+                    type: 'string' as const,
+                    format: 'email'
+                });
+
+            expect(ppt.isUnique()).to.be.true;
+            expect(ppt.isNotNull()).to.be.true;
+            expect(ppt._sc.format).to.equal('email');
         });
     });
 });

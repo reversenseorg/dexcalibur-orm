@@ -4,6 +4,7 @@ import {ValidationRule} from "./security/Validator.js";
 import {IncomingValue, SanitizedValue, UnsafeValue} from "./security/SanitizedValue.js";
 import {IStringIndex, Nullable} from "./core/IStringIndex.js";
 import {OrmException} from "./error/OrmException.js";
+import {IJSONSchema, IJSONSchemaCore, IJSONSchemaDocument} from "./utils/JSONSchema";
 
 
 export interface NodePropertyState {
@@ -28,6 +29,17 @@ export class NodeProperty {
   _u:boolean = false;
   _m:boolean = false;
   _e:boolean = false;
+
+    /**
+     * JSONSchemaDocument
+     */
+  _scd:IJSONSchemaDocument|null = null;
+
+    /**
+     * JSONSchema
+     */
+    _sc:IJSONSchema|null = null;
+
     /**
      * The name of the local property where INodeRef is stored.
      * @type {string|null}
@@ -719,4 +731,35 @@ export class NodeProperty {
             }
         })
     }
+
+    /**
+     *
+     * @param pSchema
+     */
+    schema(pSchema:IJSONSchema):NodeProperty {
+        this._sc = pSchema;
+        return this;
+    }
+
+    /**
+     *
+     * @param pSchema
+     */
+    schemaDoc(pSchemaDoc:IJSONSchemaDocument):NodeProperty {
+        this._scd = pSchemaDoc;
+        return this;
+    }
+
+    toJSONSchemaDoc():IJSONSchemaDocument|null {
+        return this._scd;
+    }
+
+    toJSONSchemaPart(pIsArray = false):IJSONSchema|null {
+        if(pIsArray){
+            return { type:"array", items: this._sc };
+        }else{
+            return this._sc;
+        }
+    }
+
 }
