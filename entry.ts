@@ -22,6 +22,8 @@ import { IStringIndex } from "./src/core/IStringIndex.js";
 import { TagCategory, TagCategoryOptions } from "./src/search/TagCategory.js";
 import { Tag, TagOptions } from "./src/search/Tag.js";
  import { NodeUtils } from "./src/NodeUtils.js";
+ import {defineSchema, IJSONSchema, IJSONSchemaDocument, JsonSchemaOpts } from "./src/utils/JSONSchema.js";
+ import { JSONSchemaValidator } from "./src/utils/JSONSchemaValidator.js";
 
 
 Tag.TYPE.updateProperties([
@@ -111,5 +113,10 @@ export {
     TagCategoryOptions,
     NodeInternalTypeName,
     ENodeInternalTypes,
-    NodeTransform
+    NodeTransform,
+    IJSONSchema,
+    IJSONSchemaDocument,
+    JSONSchemaValidator,
+    defineSchema,
+    JsonSchemaOpts
 };
