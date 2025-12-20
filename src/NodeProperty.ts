@@ -4,7 +4,7 @@ import {ValidationRule} from "./security/Validator.js";
 import {IncomingValue, SanitizedValue, UnsafeValue} from "./security/SanitizedValue.js";
 import {IStringIndex, Nullable} from "./core/IStringIndex.js";
 import {OrmException} from "./error/OrmException.js";
-import {IJSONSchema, IJSONSchemaCore, IJSONSchemaDocument} from "./utils/JSONSchema";
+import {IJSONSchema, IJSONSchemaCore, IJSONSchemaDocument} from "./utils/JSONSchema,js";
 
 
 export interface NodePropertyState {

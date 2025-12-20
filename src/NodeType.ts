@@ -14,7 +14,7 @@ import {OrmException} from "./error/OrmException.js";
 import {DataSourceHelper} from "./DataSourceHelper.js";
 import {INode} from "./INode.js";
 import {Nullable} from "./core/IStringIndex.js";
-import {IJSONSchema, IJSONSchemaDocument, JsonSchemaOpts} from "./utils/JSONSchema";
+import {IJSONSchema, IJSONSchemaDocument, JsonSchemaOpts} from "./utils/JSONSchema.js";
 
 export enum NodeTransform {
     NONE = 0,
