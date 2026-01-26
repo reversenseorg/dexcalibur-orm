@@ -298,7 +298,7 @@ export class ValidationRule {
      */
     static nodeTypeID(pNullable = false, pValid:NodeInternalType[] = []):ValidationRule {
         return (new ValidationRule( ValidationType.CUSTOM, (vValue:any)=>{
-            return (pNullable? (vValue==null) : (vValue!=null) && (typeof vValue==='number') && (pValid.indexOf(vValue)>-1));
+            return ( pNullable? (vValue==null) : (vValue!=null) && (typeof vValue==='number') && (pValid.length>0 ? (pValid.indexOf(vValue)>-1) : true) );
         })).z({ type:'nullable', of:{ type: 'enum', of:pValid }});
     }
 
