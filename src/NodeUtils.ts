@@ -83,7 +83,7 @@ export class NodeUtils {
      */
     static isNodeRef(pO:any):boolean {
         const l = Object.entries(pO).length;
-        if(l<1 && l>3) return false;
+        if(l<1 || l>3) return false;
         if(l>=1 && !ValidationRule.nodeTypeID(false).test(pO.__)) return false;
         if(l>=2 && (pO._uid==null || typeof pO._uid!=="string")) return false;
         return !(l == 3 && (pO.tags == null || !ValidationRule.asArrayOf([ValidationRule.uint64()]).test(pO.tags)));
