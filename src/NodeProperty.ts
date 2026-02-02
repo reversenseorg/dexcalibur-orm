@@ -5,6 +5,7 @@ import {IncomingValue, SanitizedValue, UnsafeValue} from "./security/SanitizedVa
 import {IStringIndex, Nullable} from "./core/IStringIndex.js";
 import {OrmException} from "./error/OrmException.js";
 import {IJSONSchema, IJSONSchemaCore, IJSONSchemaDocument} from "./utils/JSONSchema.js";
+import {JSONSchemaValidator, ValidationResult} from "./utils/JSONSchemaValidator.js";
 
 
 export interface NodePropertyState {
@@ -760,6 +761,29 @@ export class NodeProperty {
         }else{
             return this._sc;
         }
+    }
+
+    /**
+     * To check if the specified value is valid against property schema
+     * @param {any} pValue
+     * @return {ValidationResult}
+     * @method
+     * @since 1.3.5
+     */
+    checkSchema(pValue:any):ValidationResult {
+        if(this._scd==null && this._sc==null){
+            throw OrmException.CANNOT_CHECK_SCHEMA_NOSCH(this.getNodeType().getType(), this.getName());
+        }
+
+        let res:ValidationResult;
+        let v =new JSONSchemaValidator();
+        if(this._scd!=null){
+            res = v.validate(pValue, this._scd);
+            v = null; // explicitly destroy
+        }else{
+            res = v.validate(pValue, this._sc);
+        }
+        return res;
     }
 
 }

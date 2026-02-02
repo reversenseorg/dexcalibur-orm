@@ -11,6 +11,14 @@ export class OrmException extends MonitoredError {
     static ALL = {};
     static UNDEFINED_PRIMARY_KEY = (pType:any)=>{ return new OrmException(`The primary key is used but undefined [type=${pType}]`, ErrorCode.GENERIC+OrmException.ERRCODE_BASE+1) };
     static NODE_PROPERTY_HAS_EMPTY_NAME = ()=>{ return new OrmException(`A node property cannot be created with empty/null/undefined name`, ErrorCode.GENERIC+OrmException.ERRCODE_BASE+2) }
+    static CANNOT_CHECK_SCHEMA_NOSCH = (pType:number, pPpt:string)=>{
+        return new OrmException(`Cannot validate property value against JSON schema. Schema is messing`,
+            ErrorCode.GENERIC+OrmException.ERRCODE_BASE+3,
+            {
+                type:pType,
+                ppt:pPpt
+            }) }
+
 
     constructor( pMsg:string, pCode = -1, pExtra:any = null) {
         super('INTERNAL+ORM', pMsg);

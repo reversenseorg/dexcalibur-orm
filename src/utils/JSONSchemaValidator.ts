@@ -4,7 +4,8 @@
  * Validates JavaScript objects against JSON Schema definitions
  */
 
-import { IJSONSchema, JSONSchemaType, JSONSchema } from './JSONSchema.js';
+import {IJSONSchema, JSONSchemaType, JSONSchema, IJSONSchemaDocument} from './JSONSchema.js';
+
 
 /**
  * Validation error details
@@ -58,6 +59,16 @@ export class JSONSchemaValidator {
     private errors: ValidationError[] = [];
     private schemas: Map<string, IJSONSchema> = new Map();
 
+    static toJsonSchemaDoc(pSchema:IJSONSchema):IJSONSchemaDocument{
+        return {
+            $schema: "http://json-schema.org/draft-07/schema#",
+            ...pSchema
+        }
+    }
+
+    constructor() {
+    }
+
     /**
      * Validates an instance against a JSON Schema
      *
@@ -80,6 +91,7 @@ export class JSONSchemaValidator {
         this.validateSchema(instance, schema, '#', '#', pExternalErr);
         return this.getResult();
     }
+
 
     /**
      * Registers a schema for $ref resolution

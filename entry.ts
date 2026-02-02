@@ -23,7 +23,7 @@ import { TagCategory, TagCategoryOptions } from "./src/search/TagCategory.js";
 import { Tag, TagOptions } from "./src/search/Tag.js";
  import { NodeUtils } from "./src/NodeUtils.js";
  import {defineSchema, IJSONSchema, IJSONSchemaDocument, JsonSchemaOpts } from "./src/utils/JSONSchema.js";
- import { JSONSchemaValidator } from "./src/utils/JSONSchemaValidator.js";
+ import { JSONSchemaValidator, ValidationResult } from "./src/utils/JSONSchemaValidator.js";
 
 
 Tag.TYPE.updateProperties([
@@ -102,6 +102,7 @@ export {
     ValidationRulesMap,
     ValidationCapable,
     ValidationError,
+    ValidationResult,
     newLogger,
     ProdLogger,
     TestLogger,

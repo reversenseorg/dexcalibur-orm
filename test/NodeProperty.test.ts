@@ -1270,4 +1270,31 @@ describe('NodeProperty', function() {
             expect(ppt._sc.format).to.equal('email');
         });
     });
+
+    describe('checkSchema()', function () {
+
+
+        it('should return the schema document when set', function () {
+            const ppt = new NodeProperty("user");
+            const schemaDoc = {
+                $schema: 'https://json-schema.org/draft/2020-12/schema',
+                $id: 'https://example.com/user.schema.json',
+                title: 'User',
+                type: 'object' as const,
+                properties: {
+                    id: {type: 'integer' as const}
+                }
+            };
+
+            ppt.schemaDoc(schemaDoc);
+
+
+            const result = ppt.checkSchema({
+                id: 12
+            });
+
+            expect(result.valid).to.equal(true);
+        });
+
+    });
 });
