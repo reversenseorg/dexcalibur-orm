@@ -27,23 +27,61 @@ import { Tag, TagOptions } from "./src/search/Tag.js";
 
 
 Tag.TYPE.updateProperties([
-    (new NodeProperty('_uid')).type(DbDataType.STRING).key(DbKeyType.PRIMARY),
-    (new NodeProperty('_')).type(DbDataType.NUMERIC),
-    (new NodeProperty('label')).type(DbDataType.STRING),
-    (new NodeProperty('name')).type(DbDataType.STRING),
-    (new NodeProperty('descr')).type(DbDataType.STRING),
-    (new NodeProperty('category')).single(TagCategory.TYPE),
-    (new NodeProperty('extra')).type(DbDataType.BLOB).def({}),
-    (new NodeProperty("tags")).type(DbDataType.STRING).def([]),
-    (new NodeProperty("styles")).type(DbDataType.STRING).def({}),
+    (new NodeProperty('_uid'))
+        .type(DbDataType.STRING)
+        .schema({ type: "string" })
+        .descr("Canonical UID of the tag. This UID has always the following format <TagCategory.name>:<Tag.name>")
+        .key(DbKeyType.PRIMARY),
+    (new NodeProperty('_'))
+        .type(DbDataType.NUMERIC)
+        .schema({ type: "number" })
+        .descr("The internal numeric UID of the tag. This UID is unique per DexcaliburProject but can differ from another project. Only `_uid` property are common to other projects"),
+    (new NodeProperty('label'))
+        .schema({ type: "string" })
+        .descr("The Label in GUI and reports for this tags")
+        .type(DbDataType.STRING),
+    (new NodeProperty('name'))
+        .schema({ type: "string", pattern: "^[a-zA-Z0-9_]+$" })
+        .descr("ID of the tag. Support only alphanumeric et _ char. It is used to uniquely identify Tag within the parent TagCategory.")
+        .type(DbDataType.STRING),
+    (new NodeProperty('descr'))
+        .schema({ type: "string" })
+        .descr("Information about the purpose of this tag or the meaning of a node tagged by itself. Used in GUI and reports.")
+        .type(DbDataType.STRING),
+    (new NodeProperty('category'))
+        .single(TagCategory.TYPE),
+    (new NodeProperty('extra'))
+        .schema({ type: "object" })
+        .descr("Optional, additional properties for this tag.")
+        .type(DbDataType.BLOB).def({}),
+    (new NodeProperty("tags"))
+        .schema({ type: "object" })
+        .descr("List of topics used to help the final user to search a Tag by its topics")
+        .type(DbDataType.STRING).def([]),
+    (new NodeProperty("styles"))
+        .schema({ type: "object" })
+        .descr("Styles to apply to the tag to display it in GUI and reports.")
+        .type(DbDataType.STRING).def({}),
 ]).builder(Tag);
 
 
 TagCategory.TYPE.updateProperties([
-    (new NodeProperty('name')).type(DbDataType.STRING).key(DbKeyType.PRIMARY).notnull(),
-    (new NodeProperty('descr')).type(DbDataType.STRING),
-    (new NodeProperty('_tags')).volatile().multiple(Tag.TYPE),
-    (new NodeProperty("tags")).type(DbDataType.STRING).def("[]"),
+    (new NodeProperty('name'))
+        .schema({ type: "string" })
+        .descr("The identifier and human-readable name of the tag category. Must be the topic of enclosed tags")
+        .type(DbDataType.STRING).key(DbKeyType.PRIMARY).notnull(),
+    (new NodeProperty('descr'))
+        .schema({ type: "string" })
+        .descr("Information about the purpose of this category and tags enclosed in.")
+        .type(DbDataType.STRING),
+    (new NodeProperty('_tags'))
+        .volatile()
+        .descr("Children tags of this category. Used internally by Dexcalibur to manage tags.")
+        .multiple(Tag.TYPE),
+    (new NodeProperty("tags"))
+        .descr("List of topics used to help the final user to search a Tag by its topics")
+        .schema(Tag.TYPE.getProperty('_').toJSONSchemaPart(true))
+        .type(DbDataType.STRING).def([]),
 ]).builder(TagCategory);
 
 export {
