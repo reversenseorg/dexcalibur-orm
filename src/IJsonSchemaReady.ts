@@ -17,12 +17,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+import {IJSONSchema} from "./utils/JSONSchema";
 
-export enum AppContextType {
-  WEB_CLIENT,
-  WEB_SERVER
+export interface IJsonSchemaReady {
+
 }
 
-export interface IAppContext {
-  _type:AppContextType;
+export interface IJsonSchemaR {
+    new (...args: any[]): IJsonSchemaReady;
+    getJsonSchema():IJSONSchema
 }

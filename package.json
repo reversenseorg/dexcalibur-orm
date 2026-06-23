@@ -1,6 +1,6 @@
 {
   "name": "@dexcalibur/dexcalibur-orm",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Dexcalibur's internal ORM",
   "main": "./dist/entry.js",
   "exports": "./dist/entry.js",
@@ -21,7 +21,7 @@
     "orm"
   ],
   "author": "Georges-Bastien Michel <georges@reversense.com>",
-  "license": "SEE LICENSE IN LICENSE.TXT",
+  "license": "AGPL-3.0-only",
   "type": "module",
   "devDependencies": {
     "@types/chai": "^4.3.19",
