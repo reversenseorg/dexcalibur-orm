@@ -1,5 +1,5 @@
 {
-  "name": "dexcalibur-orm",
+  "name": "@dexcalibur/dexcalibur-orm",
   "version": "1.4.1",
   "description": "Dexcalibur's internal ORM",
   "main": "./dist/entry.js",
@@ -9,9 +9,6 @@
     "build": "npx tsc",
     "test": "DEXCALIBUR_TEST=1 mocha -r ts-node/register ./test/**/*.ts",
     "clean": "rm src/**/*.js src/**/*.d.ts"
-  },
-  "publishConfig": {
-    "@dexcalibur:registry": "https://registry.npmjs.org/"
   },
   "repository": {
     "type": "git",
