@@ -1,6 +1,6 @@
 {
   "name": "@dexcalibur/dexcalibur-orm",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Dexcalibur's internal ORM",
   "main": "./dist/entry.js",
   "exports": "./dist/entry.js",
@@ -13,6 +13,11 @@
   "repository": {
     "type": "git",
     "url": "https://gitlab.reversense.org/dxc/dexcalibur-orm.git"
+  },
+  "publishConfig": {
+    "@dexcalibur:registry": "https://gitlab.reversense.org/api/v4/projects/25/packages/npm/",
+    "@reversense:registry": "https://registry.npmjs.org/",
+    "@reversenseorg:registry": "https://npm.pkg.github.com/"
   },
   "keywords": [
     "orm"

@@ -1,1 +1,9 @@
 .idea/**/*
+./scripts/**
+./test/**
+.git/**
+.mocharc.jsson
+.npmrc
+.projid
+qodana.yml
+tsconfig.json
